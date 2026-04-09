@@ -9,1737 +9,407 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #FF6B9D;
-            --primary-dark: #E5547F;
-            --success: #4ECDC4;
-            --success-dark: #3DBDB5;
-            --warning: #FFD93D;
-            --danger: #FF6B6B;
-            --bg: #FFF5F8;
-            --card: #FFFFFF;
-            --text: #2D3436;
-            --text-light: #636E72;
-            --shadow: 0 8px 30px rgba(255, 107, 157, 0.15);
-            --radius: 20px;
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --primary: #FF6B9D; --primary-dark: #E5547F;
+            --success: #4ECDC4; --success-dark: #3DBDB5;
+            --warning: #FFD93D; --danger: #FF6B6B;
+            --bg: #FFF5F8; --card: #FFFFFF; --text: #2D3436; --text-light: #636E72;
+            --shadow: 0 8px 30px rgba(255,107,157,0.15); --radius: 20px;
+            --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        body { font-family: 'Nunito', -apple-system, sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); overflow-x: hidden; padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
-        .app { max-width: 768px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 20px; padding-top: calc(20px + var(--safe-top)); border-radius: 0 0 30px 30px; text-align: center; }
-        .header h1 { font-size: 1.8rem; font-weight: 800; }
-        .header p { font-size: 0.9rem; opacity: 0.9; margin-top: 4px; }
-        .content { flex: 1; padding: 20px; padding-bottom: calc(100px + var(--safe-bottom)); }
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-        .stat-card { background: var(--card); border-radius: var(--radius); padding: 16px 12px; text-align: center; box-shadow: var(--shadow); }
-        .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
-        .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
-        .section-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .section-title::before { content: ''; width: 4px; height: 20px; background: var(--primary); border-radius: 2px; }
-        .chapter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .chapter-btn { background: var(--card); border-radius: var(--radius); padding: 20px 16px; text-align: center; box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s; border: none; width: 100%; font-family: inherit; }
-        .chapter-btn:active { transform: scale(0.97); }
-        .chapter-btn .ch-icon { font-size: 2rem; margin-bottom: 8px; }
-        .chapter-btn .ch-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-        .chapter-btn .ch-progress { font-size: 0.75rem; color: var(--text-light); }
-        .practice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: var(--card); border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow); }
-        .back-btn:active { transform: scale(0.9); }
-        .progress-ring { display: flex; align-items: center; gap: 8px; }
-        .progress-circle { width: 50px; height: 50px; position: relative; }
-        .progress-circle svg { transform: rotate(-90deg); }
-        .progress-circle .bg { fill: none; stroke: #eee; stroke-width: 4; }
-        .progress-circle .progress { fill: none; stroke: var(--success); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
-        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.8rem; font-weight: 700; color: var(--success); }
-        .word-card { background: var(--card); border-radius: var(--radius); padding: 30px 24px; text-align: center; box-shadow: var(--shadow); margin-bottom: 24px; }
-        .word-hint { font-size: 1rem; color: var(--text-light); margin-bottom: 16px; }
-        .word-chinese { font-size: 1.8rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
-        .word-type { font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px; }
-        .letter-inputs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-        .letter-input { width: 52px; height: 60px; border: 3px solid #E8E8E8; border-radius: 12px; font-size: 1.8rem; font-weight: 800; text-align: center; text-transform: lowercase; font-family: inherit; transition: all 0.2s; background: white; }
-        .letter-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.2); }
-        .letter-input.correct { border-color: var(--success); background: rgba(78, 205, 196, 0.1); color: var(--success); }
-        .letter-input.incorrect { border-color: var(--danger); background: rgba(255, 107, 107, 0.1); animation: shake 0.5s ease; }
-        .letter-input.hint { border-color: var(--warning); background: rgba(255, 217, 61, 0.1); }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-        .action-btns { display: flex; gap: 12px; }
-        .btn { flex: 1; padding: 16px 24px; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4); }
-        .btn-success { background: linear-gradient(135deg, var(--success), var(--success-dark)); color: white; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4); }
-        .btn-secondary { background: #f0f0f0; color: var(--text); }
-        .feedback { padding: 16px; border-radius: var(--radius); text-align: center; margin-bottom: 20px; font-weight: 600; animation: popIn 0.3s ease; display: none; }
-        .feedback.show { display: block; }
-        .feedback.error { background: rgba(255, 107, 107, 0.15); color: var(--danger); }
-        .feedback.hint { background: rgba(255, 217, 61, 0.15); color: #B8860B; }
-        .feedback.success { background: rgba(78, 205, 196, 0.15); color: var(--success-dark); }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 50% { transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
-        .complete-card { background: var(--card); border-radius: var(--radius); padding: 40px 24px; text-align: center; box-shadow: var(--shadow); }
-        .complete-icon { font-size: 5rem; margin-bottom: 20px; animation: bounce 1s ease infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .complete-title { font-size: 1.8rem; font-weight: 800; color: var(--success); margin-bottom: 12px; }
-        .complete-stats { display: flex; justify-content: center; gap: 30px; margin: 24px 0; }
-        .complete-stat { text-align: center; }
-        .complete-stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
-        .complete-stat-label { font-size: 0.85rem; color: var(--text-light); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; padding-bottom: calc(12px + var(--safe-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: var(--text-light); font-size: 0.7rem; font-family: inherit; transition: color 0.2s; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item-icon { font-size: 1.4rem; }
-        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; display: none; }
-        .stars.show { display: block; }
-        .star { position: absolute; font-size: 2rem; animation: starFall 1s ease forwards; }
-        @keyframes starFall { 0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); } 100% { opacity: 0; transform: translateY(-100px) scale(0.5) rotate(360deg); } }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: var(--text); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; z-index: 1000; transition: transform 0.3s ease; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-        .keyboard-hint { display: none !important; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+        body { font-family:'Nunito',-apple-system,sans-serif; background:var(--bg); min-height:100vh; color:var(--text); overflow-x:hidden; padding-top:var(--safe-top); padding-bottom:var(--safe-bottom); }
+        .app { max-width:768px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+        .header { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; padding:20px; padding-top:calc(20px + var(--safe-top)); border-radius:0 0 30px 30px; text-align:center; }
+        .header h1 { font-size:1.8rem; font-weight:800; }
+        .header p { font-size:0.9rem; opacity:0.9; margin-top:4px; }
+        .content { flex:1; padding:20px; padding-bottom:calc(100px + var(--safe-bottom)); }
+        .page { display:none; animation:fadeIn 0.3s ease; }
+        .page.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+        .stat-card { background:var(--card); border-radius:var(--radius); padding:16px 12px; text-align:center; box-shadow:var(--shadow); }
+        .stat-icon { font-size:1.8rem; margin-bottom:8px; }
+        .stat-value { font-size:1.6rem; font-weight:800; color:var(--primary); }
+        .stat-label { font-size:0.75rem; color:var(--text-light); margin-top:4px; }
+        .section-title { font-size:1.1rem; font-weight:700; color:var(--text); margin:20px 0 12px; display:flex; align-items:center; gap:8px; }
+        .section-title::before { content:''; width:4px; height:20px; background:var(--primary); border-radius:2px; }
+        .chapter-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:8px; }
+        .chapter-btn { background:var(--card); border-radius:16px; padding:16px 14px; text-align:left; box-shadow:var(--shadow); cursor:pointer; transition:all 0.2s; border:2px solid transparent; width:100%; font-family:inherit; position:relative; overflow:hidden; }
+        .chapter-btn:active { transform:scale(0.97); }
+        .chapter-btn .ch-icon { font-size:1.5rem; margin-bottom:6px; }
+        .chapter-btn .ch-title { font-size:0.88rem; font-weight:700; color:var(--text); margin-bottom:4px; line-height:1.3; }
+        .chapter-btn .ch-sub { font-size:0.72rem; color:var(--text-light); }
+        .chapter-btn .ch-bar-wrap { margin-top:8px; height:5px; background:#F0F0F0; border-radius:3px; overflow:hidden; }
+        .chapter-btn .ch-bar { height:100%; background:linear-gradient(90deg,var(--success),var(--success-dark)); border-radius:3px; transition:width 0.5s; }
+        .chapter-btn.mastered { border-color:var(--success); }
+        .chapter-btn.mastered::after { content:'✓'; position:absolute; top:8px; right:10px; color:var(--success); font-weight:800; font-size:0.9rem; }
+        .practice-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .back-btn { background:var(--card); border:none; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; cursor:pointer; box-shadow:var(--shadow); }
+        .back-btn:active { transform:scale(0.9); }
+        .progress-ring { display:flex; align-items:center; gap:8px; }
+        .progress-circle { width:50px; height:50px; position:relative; }
+        .progress-circle svg { transform:rotate(-90deg); }
+        .progress-circle .bg { fill:none; stroke:#eee; stroke-width:4; }
+        .progress-circle .progress { fill:none; stroke:var(--success); stroke-width:4; stroke-linecap:round; transition:stroke-dashoffset 0.5s ease; }
+        .progress-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:0.8rem; font-weight:700; color:var(--success); }
+        .word-card { background:var(--card); border-radius:var(--radius); padding:30px 24px; text-align:center; box-shadow:var(--shadow); margin-bottom:20px; }
+        .word-hint { font-size:0.95rem; color:var(--text-light); margin-bottom:10px; }
+        .word-chinese { font-size:2rem; font-weight:800; color:var(--primary); margin-bottom:8px; }
+        .word-type { display:inline-block; background:#FFF0F5; color:var(--primary); font-size:0.8rem; font-weight:700; padding:4px 12px; border-radius:20px; margin-bottom:8px; }
+        .word-status { font-size:0.75rem; color:var(--text-light); margin-top:4px; }
+        .word-status span { display:inline-block; padding:2px 8px; border-radius:10px; font-weight:600; }
+        .new-badge { background:#FFF0F5; color:var(--primary); }
+        .review-badge { background:#F0FFF4; color:var(--success-dark); }
+        .mastered-badge { background:#E8F4FD; color:#3498DB; }
+        .word-input-wrap { margin-bottom:20px; }
+        .word-input { width:100%; padding:18px 20px; border:3px solid #E8E8E8; border-radius:16px; font-size:1.6rem; font-weight:800; text-align:center; text-transform:lowercase; font-family:inherit; transition:all 0.2s; background:white; letter-spacing:0.1em; }
+        .word-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(255,107,157,0.15); }
+        .word-input.correct { border-color:var(--success); background:rgba(78,205,196,0.08); color:var(--success); }
+        .word-input.incorrect { border-color:var(--danger); background:rgba(255,107,107,0.08); animation:shake 0.5s ease; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+        .action-btns { display:flex; gap:12px; }
+        .btn { flex:1; padding:16px 24px; border:none; border-radius:var(--radius); font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:inherit; }
+        .btn:active { transform:scale(0.97); }
+        .btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; box-shadow:0 4px 15px rgba(255,107,157,0.4); }
+        .btn-success { background:linear-gradient(135deg,var(--success),var(--success-dark)); color:white; box-shadow:0 4px 15px rgba(78,205,196,0.4); }
+        .btn-secondary { background:#f0f0f0; color:var(--text); }
+        .feedback { padding:14px; border-radius:var(--radius); text-align:center; margin-bottom:16px; font-weight:600; animation:popIn 0.3s ease; display:none; }
+        .feedback.show { display:block; }
+        .feedback.error { background:rgba(255,107,107,0.12); color:var(--danger); }
+        .feedback.hint { background:rgba(255,217,61,0.12); color:#B8860B; }
+        .feedback.success { background:rgba(78,205,196,0.12); color:var(--success-dark); }
+        @keyframes popIn { 0%{opacity:0;transform:scale(0.9)} 50%{transform:scale(1.02)} 100%{opacity:1;transform:scale(1)} }
+        .correct-word-show { font-size:1.8rem; font-weight:800; color:var(--success); letter-spacing:0.12em; margin:6px 0; }
+        .complete-card { background:var(--card); border-radius:var(--radius); padding:40px 24px; text-align:center; box-shadow:var(--shadow); }
+        .complete-icon { font-size:5rem; margin-bottom:20px; animation:bounce 1s ease infinite; }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .complete-title { font-size:1.8rem; font-weight:800; color:var(--success); margin-bottom:12px; }
+        .complete-stats { display:flex; justify-content:center; gap:30px; margin:24px 0; }
+        .complete-stat { text-align:center; }
+        .complete-stat-value { font-size:2rem; font-weight:800; color:var(--primary); }
+        .complete-stat-label { font-size:0.85rem; color:var(--text-light); }
+        .word-list { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:20px; }
+        .word-list-header { display:grid; grid-template-columns:1fr auto auto; gap:8px; padding:12px 16px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; font-size:0.85rem; font-weight:700; }
+        .word-list-item { display:grid; grid-template-columns:1fr auto auto; gap:8px; padding:12px 16px; border-bottom:1px solid #F5F5F5; align-items:center; }
+        .word-list-item:last-child { border-bottom:none; }
+        .wl-word { font-weight:700; font-size:0.95rem; }
+        .wl-cn { font-size:0.8rem; color:var(--text-light); margin-top:2px; }
+        .wl-status { font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:10px; white-space:nowrap; }
+        .wl-status.s0 { background:#F5F5F5; color:#999; }
+        .wl-status.s1 { background:#FFF0F5; color:var(--primary); }
+        .wl-status.s2 { background:#FFF8E7; color:#B8860B; }
+        .wl-status.s3 { background:#F0FFF4; color:var(--success-dark); }
+        .wl-next { font-size:0.72rem; color:var(--text-light); }
+        .filter-tabs { display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px; }
+        .filter-tab { padding:7px 14px; border:none; border-radius:20px; font-size:0.8rem; font-weight:700; cursor:pointer; white-space:nowrap; font-family:inherit; transition:all 0.2s; background:#F0F0F0; color:var(--text); }
+        .filter-tab.active { background:var(--primary); color:white; }
+        .chapter-select { width:100%; padding:10px 14px; border:2px solid #E8E8E8; border-radius:12px; font-size:0.9rem; font-family:inherit; margin-bottom:16px; background:white; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; display:flex; justify-content:space-around; padding:12px 0; padding-bottom:calc(12px + var(--safe-bottom)); box-shadow:0 -4px 20px rgba(0,0,0,0.08); z-index:100; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; color:var(--text-light); font-size:0.7rem; font-family:inherit; transition:color 0.2s; }
+        .nav-item.active { color:var(--primary); }
+        .nav-item-icon { font-size:1.4rem; }
+        .stars { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1000; display:none; }
+        .stars.show { display:block; }
+        .star { position:absolute; font-size:2rem; animation:starFall 1s ease forwards; }
+        @keyframes starFall { 0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)} 100%{opacity:0;transform:translateY(-100px) scale(0.5) rotate(360deg)} }
+        .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--text); color:white; padding:12px 24px; border-radius:30px; font-weight:600; z-index:1000; transition:transform 0.3s ease; }
+        .toast.show { transform:translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
-    <div class="app">
-        <header class="header">
-            <h1>🌟 雪梨拼读</h1>
-            <p>每天进步一点点</p>
-        </header>
-        <main class="content">
-            <div id="home-page" class="page active">
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="stat-total">0</div><div class="stat-label">总单词数</div></div>
-                    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="stat-learned">0</div><div class="stat-label">已掌握</div></div>
-                    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-value" id="stat-streak">0</div><div class="stat-label">连续天数</div></div>
-                </div>
-                <div class="section-title">选择章节开始学习</div>
-                <div id="chapter-list" class="chapter-grid"></div>
+<div class="app">
+    <header class="header">
+        <h1>&#127775; 雪梨拼读</h1>
+        <p>每天进步一点点</p>
+    </header>
+    <main class="content">
+        <div id="home-page" class="page active">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon">&#128218;</div><div class="stat-value" id="stat-total">0</div><div class="stat-label">总单词数</div></div>
+                <div class="stat-card"><div class="stat-icon">&#9989;</div><div class="stat-value" id="stat-learned">0</div><div class="stat-label">已掌握</div></div>
+                <div class="stat-card"><div class="stat-icon">&#128293;</div><div class="stat-value" id="stat-streak">0</div><div class="stat-label">连续天数</div></div>
             </div>
-            <div id="practice-page" class="page">
-                <div class="practice-header">
-                    <button class="back-btn" onclick="goHome()">←</button>
-                    <div class="progress-ring">
-                        <div class="progress-circle">
-                            <svg width="50" height="50"><circle class="bg" cx="25" cy="25" r="20"></circle><circle class="progress" id="progress-circle" cx="25" cy="25" r="20" stroke-dasharray="125.6" stroke-dashoffset="125.6"></circle></svg>
-                            <span class="progress-text" id="progress-text">0/0</span>
-                        </div>
+            <div id="chapter-list"></div>
+        </div>
+        <div id="practice-page" class="page">
+            <div class="practice-header">
+                <button class="back-btn" onclick="goHome()">&#8592;</button>
+                <div style="font-size:0.85rem;font-weight:700;color:var(--text-light);max-width:160px;text-align:center;line-height:1.3" id="chapter-name-label"></div>
+                <div class="progress-ring">
+                    <div class="progress-circle">
+                        <svg width="50" height="50"><circle class="bg" cx="25" cy="25" r="20"></circle><circle class="progress" id="progress-circle" cx="25" cy="25" r="20" stroke-dasharray="125.6" stroke-dashoffset="125.6"></circle></svg>
+                        <span class="progress-text" id="progress-text">0/0</span>
                     </div>
                 </div>
-                <div class="word-card">
-                    <div class="word-hint">请拼写这个单词：</div>
-                    <div class="word-chinese" id="word-chinese">苹果</div>
-                    <div class="word-type" id="word-type">n. 名词</div>
+            </div>
+            <div class="word-card">
+                <div class="word-hint">看中文，拼写英文单词：</div>
+                <div class="word-chinese" id="word-chinese">苹果</div>
+                <div><span class="word-type" id="word-type">n.</span></div>
+                <div class="word-status" id="word-status"></div>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="word-input-wrap">
+                <input type="text" class="word-input" id="word-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词…" />
+            </div>
+            <div class="action-btns">
+                <button class="btn btn-secondary" onclick="showHint()">&#128161; 提示</button>
+                <button class="btn btn-primary" onclick="checkAnswer()">&#10003; 检查</button>
+            </div>
+        </div>
+        <div id="complete-page" class="page">
+            <div class="complete-card">
+                <div class="complete-icon">&#127881;</div>
+                <div class="complete-title">太棒了！</div>
+                <p style="color:var(--text-light)">你完成了本章节的学习！</p>
+                <div class="complete-stats">
+                    <div class="complete-stat"><div class="complete-stat-value" id="complete-correct">0</div><div class="complete-stat-label">正确</div></div>
+                    <div class="complete-stat"><div class="complete-stat-value" id="complete-wrong">0</div><div class="complete-stat-label">错误</div></div>
+                    <div class="complete-stat"><div class="complete-stat-value" id="complete-hints">0</div><div class="complete-stat-label">提示</div></div>
                 </div>
-                <div class="feedback" id="feedback"></div>
-                <div class="letter-inputs" id="letter-inputs"></div>
-                <div class="keyboard-hint" id="keyboard-hint"></div>
                 <div class="action-btns">
-                    <button class="btn btn-secondary" id="hint-btn" onclick="showHint()">💡 提示</button>
-                    <button class="btn btn-primary" id="check-btn" onclick="checkAnswer()">✓ 检查</button>
+                    <button class="btn btn-secondary" onclick="goHome()">返回主页</button>
+                    <button class="btn btn-success" onclick="reviewMistakes()">复习错题</button>
                 </div>
             </div>
-            <div id="complete-page" class="page">
-                <div class="complete-card">
-                    <div class="complete-icon">🎉</div>
-                    <div class="complete-title">太棒了！</div>
-                    <p style="color: var(--text-light);">你完成了本章节的学习！</p>
-                    <div class="complete-stats">
-                        <div class="complete-stat"><div class="complete-stat-value" id="complete-correct">0</div><div class="complete-stat-label">正确</div></div>
-                        <div class="complete-stat"><div class="complete-stat-value" id="complete-wrong">0</div><div class="complete-stat-label">错误</div></div>
-                        <div class="complete-stat"><div class="complete-stat-value" id="complete-hints">0</div><div class="complete-stat-label">提示</div></div>
-                    </div>
-                    <div class="action-btns">
-                        <button class="btn btn-secondary" onclick="goHome()">返回主页</button>
-                        <button class="btn btn-success" onclick="reviewMistakes()">复习错题</button>
-                    </div>
-                </div>
+        </div>
+        <div id="progress-page" class="page">
+            <div class="section-title">学习进度</div>
+            <select class="chapter-select" id="progress-chapter-select" onchange="renderWordList()"></select>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all" onclick="setFilter(this)">全部</button>
+                <button class="filter-tab" data-filter="0" onclick="setFilter(this)">未学习</button>
+                <button class="filter-tab" data-filter="1" onclick="setFilter(this)">学习中</button>
+                <button class="filter-tab" data-filter="3" onclick="setFilter(this)">已掌握</button>
             </div>
-        </main>
-        <nav class="bottom-nav">
-            <button class="nav-item active" onclick="switchTab('home')"><span class="nav-item-icon">🏠</span><span>首页</span></button>
-            <button class="nav-item" onclick="switchTab('progress')"><span class="nav-item-icon">📊</span><span>进度</span></button>
-        </nav>
-    </div>
-    <div class="stars" id="stars"></div>
-    <div class="toast" id="toast"></div>
-    <script>
-const WORDS_DATA = [
-  {
-    id: 'vol1',
-    title: 'Level 1 基础',
-    icon: '📗',
-    words: [
-      { word: 'animal', chinese: '动物', type: 'n' },
-      { word: 'apple', chinese: '苹果', type: 'n' },
-      { word: 'and', chinese: '和', type: 'conj' },
-      { word: 'at', chinese: '在', type: 'prep' },
-      { word: 'ant', chinese: '蚂蚁', type: 'n' },
-      { word: 'pan', chinese: '平底锅', type: 'n' },
-      { word: 'am', chinese: '是', type: 'v' },
-      { word: 'back', chinese: '背部', type: 'n' },
-      { word: 'bad', chinese: '坏的', type: 'adj' },
-      { word: 'dad', chinese: '爸爸', type: 'n' },
-      { word: 'had', chinese: '有', type: 'v' },
-      { word: 'mad', chinese: '生气的', type: 'adj' },
-      { word: 'pad', chinese: '垫子', type: 'n' },
-      { word: 'sad', chinese: '伤心的', type: 'adj' },
-      { word: 'cat', chinese: '猫', type: 'n' },
-      { word: 'bat', chinese: '蝙蝠', type: 'n' },
-      { word: 'fat', chinese: '肥胖的', type: 'adj' },
-      { word: 'hat', chinese: '帽子', type: 'n' },
-      { word: 'mat', chinese: '垫子', type: 'n' },
-      { word: 'pat', chinese: '轻拍', type: 'v' },
-      { word: 'rat', chinese: '老鼠', type: 'n' },
-      { word: 'sat', chinese: '坐下', type: 'v' },
-      { word: 'can', chinese: '能够', type: 'modal v' },
-      { word: 'fan', chinese: '风扇', type: 'n' },
-      { word: 'man', chinese: '男人', type: 'n' },
-      { word: 'ran', chinese: '跑', type: 'v' },
-      { word: 'tan', chinese: '棕褐色', type: 'n' },
-      { word: 'van', chinese: '面包车', type: 'n' },
-      { word: 'cap', chinese: '鸭舌帽', type: 'n' },
-      { word: 'gap', chinese: '缝隙', type: 'n' },
-      { word: 'map', chinese: '地图', type: 'n' },
-      { word: 'nap', chinese: '打盹', type: 'n' },
-      { word: 'rap', chinese: '说唱', type: 'n' },
-      { word: 'tap', chinese: '水龙头', type: 'n' },
-      { word: 'zap', chinese: '击溃', type: 'v' },
-      { word: 'cash', chinese: '现金', type: 'n' },
-      { word: 'dash', chinese: '猛冲', type: 'v' },
-      { word: 'flash', chinese: '闪光', type: 'v' },
-      { word: 'hash', chinese: '剁碎的食物', type: 'n' },
-      { word: 'mash', chinese: '捣碎', type: 'v' },
-      { word: 'camp', chinese: '营地', type: 'n' },
-      { word: 'damp', chinese: '潮湿的', type: 'adj' },
-      { word: 'lamp', chinese: '灯', type: 'n' },
-      { word: 'ramp', chinese: '斜坡', type: 'n' },
-      { word: 'stamp', chinese: '跺脚；n.邮票', type: 'v' },
-      { word: 'baby', chinese: '婴儿', type: 'n' },
-      { word: 'crazy', chinese: '疯狂的', type: 'adj' },
-      { word: 'nature', chinese: '大自然', type: 'n' },
-      { word: 'lady', chinese: '女士', type: 'n' },
-      { word: 'late', chinese: '迟到的', type: 'adj' },
-      { word: 'table', chinese: '桌子', type: 'n' },
-      { word: 'lazy', chinese: '懒惰的', type: 'adj' },
-      { word: 'radio', chinese: '收音机', type: 'n' },
-      { word: 'cake', chinese: '蛋糕', type: 'n' },
-      { word: 'bake', chinese: '烘烤', type: 'v' },
-      { word: 'date', chinese: '日期', type: 'n' },
-      { word: 'gate', chinese: '大门', type: 'n' },
-      { word: 'lake', chinese: '湖', type: 'n' },
-      { word: 'make', chinese: '制作', type: 'v' },
-      { word: 'take', chinese: '拿走', type: 'v' },
-      { word: 'above', chinese: '在……上面', type: 'prep' },
-      { word: 'china', chinese: '中国', type: 'n' },
-      { word: 'apart', chinese: '分离', type: 'adv' },
-      { word: 'sofa', chinese: '沙发', type: 'n' },
-      { word: 'about', chinese: '关于', type: 'prep' },
-      { word: 'library', chinese: '图书馆', type: 'n' },
-      { word: 'panda', chinese: '熊猫', type: 'n' },
-      { word: 'amazing', chinese: '令人惊异的', type: 'adj' },
-      { word: 'ago', chinese: '以前', type: 'adv' },
-      { word: 'awake', chinese: '醒着的', type: 'adj' },
-      { word: 'along', chinese: '沿着', type: 'prep' },
-      { word: 'alarm', chinese: '警报', type: 'n' },
-      { word: 'award', chinese: '奖品', type: 'n' },
-      { word: 'again', chinese: '再一次', type: 'adv' },
-      { word: 'after', chinese: '在……之后', type: 'prep' },
-      { word: 'dance', chinese: '跳舞', type: 'v' },
-      { word: 'plant', chinese: '植物', type: 'n' },
-      { word: 'bath', chinese: '洗澡', type: 'v' },
-      { word: 'pass', chinese: '通过', type: 'v' },
-      { word: 'fast', chinese: '快的', type: 'adj' },
-      { word: 'ask', chinese: '询问', type: 'v' },
-      { word: 'glass', chinese: '玻璃杯', type: 'n' },
-      { word: 'graph', chinese: '图表', type: 'n' },
-      { word: 'last', chinese: '最近；上一次', type: 'adv' },
-      { word: 'want', chinese: '想要', type: 'v' },
-      { word: 'what', chinese: '什么', type: 'pron' },
-      { word: 'wash', chinese: '洗', type: 'v' },
-      { word: 'watch', chinese: '手表；v.观看', type: 'n' },
-      { word: 'was', chinese: '是', type: 'v' },
-      { word: 'wallet', chinese: '钱包', type: 'n' },
-      { word: 'salt', chinese: '盐', type: 'n' },
-      { word: 'already', chinese: '已经', type: 'adv' },
-      { word: 'water', chinese: '水', type: 'n' },
-      { word: 'false', chinese: '错误的', type: 'adj' },
-      { word: 'always', chinese: '总是', type: 'adv' },
-      { word: 'also', chinese: '也', type: 'adv' },
-      { word: 'many', chinese: '许多', type: 'pron' },
-      { word: 'any', chinese: '任何一个', type: 'pron' },
-      { word: 'orange', chinese: '橙子', type: 'n' },
-      { word: 'village', chinese: '村庄', type: 'n' },
-      { word: 'leg', chinese: '腿', type: 'n' },
-      { word: 'bed', chinese: '床', type: 'n' },
-      { word: 'ten', chinese: '数字10', type: 'num' },
-      { word: 'egg', chinese: '蛋', type: 'n' },
-      { word: 'end', chinese: '结束', type: 'v' },
-      { word: 'pet', chinese: '宠物', type: 'n' },
-      { word: 'pen', chinese: '钢笔', type: 'n' },
-      { word: 'elephant', chinese: '大象', type: 'n' },
-      { word: 'red', chinese: '红色的', type: 'adj' },
-      { word: 'wed', chinese: '结婚', type: 'v' },
-      { word: 'led', chinese: '带领', type: 'v' },
-      { word: 'sled', chinese: '雪橇', type: 'n' },
-      { word: 'fed', chinese: '喂养', type: 'v' },
-      { word: 'fled', chinese: '逃走', type: 'v' },
-      { word: 'beg', chinese: '乞求', type: 'v' },
-      { word: 'peg', chinese: '衣夹', type: 'n' },
-      { word: 'be', chinese: '是', type: 'v' },
-      { word: 'meter', chinese: '米', type: 'n' },
-      { word: 'me', chinese: '我', type: 'pron' },
-      { word: 'we', chinese: '我们', type: 'pron' },
-      { word: 'he', chinese: '他', type: 'pron' },
-      { word: 'she', chinese: '她', type: 'pron' },
-      { word: 'museum', chinese: '博物馆', type: 'n' },
-      { word: 'email', chinese: '电子邮件', type: 'n' },
-      { word: 'these', chinese: '这些', type: 'pron' },
-      { word: 'theme', chinese: '主题', type: 'n' },
-      { word: 'chinese', chinese: '中国人；汉语', type: 'n' },
-      { word: 'japanese', chinese: '日本人', type: 'n' },
-      { word: 'delete', chinese: '删除', type: 'v' },
-      { word: 'scene', chinese: '场景', type: 'n' },
-      { word: 'eve', chinese: '前夕', type: 'n' },
-      { word: 'gene', chinese: '基因', type: 'n' },
-      { word: 'forest', chinese: '森林', type: 'n' },
-      { word: 'behind', chinese: '在……后面', type: 'prep' },
-      { word: 'eraser', chinese: '橡皮擦', type: 'n' },
-      { word: 'pretty', chinese: '美丽的', type: 'adj' },
-      { word: 'chicken', chinese: '鸡肉', type: 'n' },
-      { word: 'before', chinese: '在……之前', type: 'prep' },
-      { word: 'basket', chinese: '篮子', type: 'n' },
-      { word: 'rocket', chinese: '火箭', type: 'n' },
-      { word: 'ticket', chinese: '票', type: 'n' },
-      { word: 'jacket', chinese: '夹克衫', type: 'n' },
-      { word: 'hundred', chinese: '一百', type: 'num' },
-      { word: 'parent', chinese: '父(母)亲', type: 'n' },
-      { word: 'broken', chinese: '破碎的', type: 'adj' },
-      { word: 'often', chinese: '时常', type: 'adv' },
-      { word: 'open', chinese: '打开', type: 'v' },
-      { word: 'problem', chinese: '问题', type: 'n' },
-      { word: 'cinema', chinese: '电影院', type: 'n' },
-      { word: 'children', chinese: '孩子们', type: 'n' },
-      { word: 'minute', chinese: '分钟', type: 'n' },
-      { word: 'juice', chinese: '果汁', type: 'n' },
-      { word: 'police', chinese: '警察', type: 'n' },
-      { word: 'mouse', chinese: '老鼠', type: 'n' },
-      { word: 'horse', chinese: '马', type: 'n' },
-      { word: 'noise', chinese: '噪音', type: 'n' },
-      { word: 'leave', chinese: '离开', type: 'v' },
-      { word: 'office', chinese: '办公室', type: 'n' },
-      { word: 'decide', chinese: '决定', type: 'v' },
-      { word: 'guide', chinese: '指导', type: 'v' },
-      { word: 'praise', chinese: '表扬', type: 'v' },
-      { word: 'describe', chinese: '描述', type: 'v' },
-      { word: 'in', chinese: '在……里面', type: 'prep' },
-      { word: 'his', chinese: '他的', type: 'pron' },
-      { word: 'ill', chinese: '生病的', type: 'adj' },
-      { word: 'if', chinese: '如果', type: 'conj' },
-      { word: 'sit', chinese: '坐下', type: 'v' },
-      { word: 'pig', chinese: '猪', type: 'n' },
-      { word: 'insect', chinese: '昆虫', type: 'n' },
-      { word: 'him', chinese: '他', type: 'pron' },
-      { word: 'big', chinese: '大的', type: 'adj' },
-      { word: 'dig', chinese: '挖', type: 'v' },
-      { word: 'fig', chinese: '无花果', type: 'n' },
-      { word: 'rig', chinese: '操纵', type: 'v' },
-      { word: 'wig', chinese: '假发', type: 'n' },
-      { word: 'bit', chinese: '小片', type: 'n' },
-      { word: 'fit', chinese: '适合', type: 'v' },
-      { word: 'hit', chinese: '击打', type: 'v' },
-      { word: 'kit', chinese: '成套工具', type: 'n' },
-      { word: 'lit', chinese: '点亮', type: 'v' },
-      { word: 'pit', chinese: '坑', type: 'n' },
-      { word: 'wit', chinese: '智慧', type: 'n' },
-      { word: 'bin', chinese: '垃圾桶', type: 'n' },
-      { word: 'din', chinese: '噪音', type: 'n' },
-      { word: 'fin', chinese: '鱼鳍', type: 'n' },
-      { word: 'kin', chinese: '亲属', type: 'n' },
-      { word: 'pin', chinese: '大头针', type: 'n' },
-      { word: 'sin', chinese: '罪恶', type: 'n' },
-      { word: 'tin', chinese: '罐头', type: 'n' },
-      { word: 'win', chinese: '获胜', type: 'v' },
-      { word: 'sign', chinese: '标志', type: 'n' },
-      { word: 'tiger', chinese: '老虎', type: 'n' },
-      { word: 'kind', chinese: '善良的', type: 'adj' },
-      { word: 'wild', chinese: '野生的', type: 'adj' },
-      { word: 'find', chinese: '找到', type: 'v' },
-      { word: 'child', chinese: '儿童', type: 'n' },
-      { word: 'tiny', chinese: '极小的', type: 'adj' },
-      { word: 'bicycle', chinese: '自行车', type: 'n' },
-      { word: 'bike', chinese: '自行车', type: 'n' },
-      { word: 'like', chinese: '喜欢', type: 'v' },
-      { word: 'nice', chinese: '美好的', type: 'adj' },
-      { word: 'rice', chinese: '大米', type: 'n' },
-      { word: 'ride', chinese: '骑', type: 'v' },
-      { word: 'side', chinese: '边', type: 'n' },
-      { word: 'time', chinese: '时间', type: 'n' },
-      { word: 'five', chinese: '数字5', type: 'num' },
-      { word: 'terrible', chinese: '糟糕的', type: 'adj' },
-      { word: 'family', chinese: '家庭', type: 'n' },
-      { word: 'april', chinese: '4月', type: 'n' },
-      { word: 'holiday', chinese: '假期', type: 'n' },
-      { word: 'on', chinese: '在……上面', type: 'prep' },
-      { word: 'lot', chinese: '许多', type: 'pron' },
-      { word: 'body', chinese: '身体', type: 'n' },
-      { word: 'top', chinese: '顶部', type: 'n' },
-      { word: 'fox', chinese: '狐狸', type: 'n' },
-      { word: 'hop', chinese: '单腿跳', type: 'v' },
-      { word: 'not', chinese: '不', type: 'adv' },
-      { word: 'sorry', chinese: '抱歉的', type: 'adj' },
-      { word: 'dog', chinese: '狗', type: 'n' },
-      { word: 'fog', chinese: '雾', type: 'n' },
-      { word: 'hog', chinese: '猪', type: 'n' },
-      { word: 'log', chinese: '原木', type: 'n' },
-      { word: 'bog', chinese: '沼泽', type: 'n' },
-      { word: 'cog', chinese: '齿轮', type: 'n' },
-      { word: 'bob', chinese: '摆动', type: 'v' },
-      { word: 'cob', chinese: '玉米棒', type: 'n' },
-      { word: 'job', chinese: '工作', type: 'n' },
-      { word: 'mob', chinese: '暴民', type: 'n' },
-      { word: 'rob', chinese: '抢劫', type: 'v' },
-      { word: 'dot', chinese: '小圆点', type: 'n' },
-      { word: 'got', chinese: '获得', type: 'v' },
-      { word: 'hot', chinese: '热的', type: 'adj' },
-      { word: 'pot', chinese: '锅', type: 'n' },
-      { word: 'rot', chinese: '腐烂', type: 'v' },
-      { word: 'tot', chinese: '小孩', type: 'n' },
-      { word: 'post', chinese: '邮递', type: 'n' },
-      { word: 'potato', chinese: '马铃薯', type: 'n' },
-      { word: 'cold', chinese: '冷的', type: 'adj' },
-      { word: 'go', chinese: '去', type: 'v' },
-      { word: 'old', chinese: '年老的', type: 'adj' },
-      { word: 'so', chinese: '所以', type: 'conj' },
-      { word: 'both', chinese: '两者', type: 'pron' },
-      { word: 'no', chinese: '不', type: 'adv' },
-      { word: 'tomato', chinese: '西红柿', type: 'n' },
-      { word: 'piano', chinese: '钢琴', type: 'n' },
-      { word: 'host', chinese: '主办', type: 'v' },
-      { word: 'social', chinese: '社交的', type: 'adj' },
-      { word: 'folk', chinese: '民俗的', type: 'adj' },
-      { word: 'hold', chinese: '抓住', type: 'v' },
-      { word: 'fold', chinese: '折叠', type: 'v' },
-      { word: 'over', chinese: '结束的', type: 'adj' },
-      { word: 'nose', chinese: '鼻子', type: 'n' },
-      { word: 'those', chinese: '那些', type: 'pron' },
-      { word: 'bone', chinese: '骨头', type: 'n' },
-      { word: 'home', chinese: '家', type: 'n' },
-      { word: 'rope', chinese: '绳子', type: 'n' },
-      { word: 'joke', chinese: '玩笑', type: 'n' },
-      { word: 'hole', chinese: '洞', type: 'n' },
-      { word: 'note', chinese: '笔记', type: 'n' },
-      { word: 'rode', chinese: '骑', type: 'v' },
-      { word: 'hope', chinese: '希望', type: 'v' },
-      { word: 'tonight', chinese: '今晚', type: 'adv' },
-      { word: 'polite', chinese: '有礼貌的', type: 'adj' },
-      { word: 'today', chinese: '今天', type: 'adv' },
-      { word: 'lesson', chinese: '课程', type: 'n' },
-      { word: 'carrot', chinese: '胡萝卜', type: 'n' },
-      { word: 'together', chinese: '在一起', type: 'adv' },
-      { word: 'come', chinese: '来', type: 'v' },
-      { word: 'monkey', chinese: '猴子', type: 'n' },
-      { word: 'mother', chinese: '母亲', type: 'n' },
-      { word: 'some', chinese: '一些', type: 'pron' },
-      { word: 'love', chinese: '爱', type: 'v' },
-      { word: 'onion', chinese: '洋葱', type: 'n' },
-      { word: 'money', chinese: '钱', type: 'n' },
-      { word: 'monday', chinese: '星期一', type: 'n' },
-      { word: 'hug', chinese: '拥抱', type: 'v' },
-      { word: 'under', chinese: '在……下面', type: 'prep' },
-      { word: 'sun', chinese: '太阳', type: 'n' },
-      { word: 'cut', chinese: '剪切', type: 'v' },
-      { word: 'ugly', chinese: '丑陋的', type: 'adj' },
-      { word: 'umbrella', chinese: '雨伞', type: 'n' },
-      { word: 'run', chinese: '跑', type: 'v' },
-      { word: 'bus', chinese: '公交车', type: 'n' },
-      { word: 'uncle', chinese: '叔叔', type: 'n' },
-      { word: 'discuss', chinese: '讨论', type: 'v' },
-      { word: 'until', chinese: '直到……为止', type: 'conj' },
-      { word: 'unusual', chinese: '不寻常的', type: 'adj' },
-      { word: 'upset', chinese: '不高兴的', type: 'adj' },
-      { word: 'us', chinese: '我们', type: 'pron' },
-      { word: 'unfair', chinese: '不公平的', type: 'adj' },
-      { word: 'underground', chinese: '地下的', type: 'adj' },
-      { word: 'bush', chinese: '灌木', type: 'n' },
-      { word: 'put', chinese: '放置', type: 'v' },
-      { word: 'pull', chinese: '拉', type: 'v' },
-      { word: 'push', chinese: '推', type: 'v' },
-      { word: 'full', chinese: '满的', type: 'adj' },
-      { word: 'sugar', chinese: '糖', type: 'n' },
-      { word: 'usually', chinese: '通常', type: 'adv' },
-      { word: 'pupil', chinese: '小学生', type: 'n' },
-      { word: 'duty', chinese: '责任', type: 'n' },
-      { word: 'human', chinese: '人类', type: 'n' },
-      { word: 'music', chinese: '音乐', type: 'n' },
-      { word: 'student', chinese: '学生', type: 'n' },
-      { word: 'cube', chinese: '立方体', type: 'n' },
-      { word: 'tube', chinese: '管子', type: 'n' },
-      { word: 'use', chinese: '使用', type: 'v' },
-      { word: 'mule', chinese: '骡子', type: 'n' },
-      { word: 'huge', chinese: '巨大的', type: 'adj' },
-      { word: 'cute', chinese: '可爱的', type: 'adj' },
-      { word: 'mute', chinese: '静音的', type: 'adj' },
-      { word: 'dune', chinese: '沙丘', type: 'n' },
-      { word: 'super', chinese: '超级的', type: 'adj' },
-      { word: 'rude', chinese: '粗鲁的', type: 'adj' },
-      { word: 'rule', chinese: '规则', type: 'n' },
-      { word: 'lunar', chinese: '月亮的', type: 'adj' },
-      { word: 'ruler', chinese: '尺子', type: 'n' },
-      { word: 'junior', chinese: '年龄较小的', type: 'adj' },
-      { word: 'autumn', chinese: '秋天', type: 'n' },
-      { word: 'upon', chinese: '在……上', type: 'prep' },
-      { word: 'lotus', chinese: '莲花', type: 'n' },
-      { word: 'bonus', chinese: '奖金', type: 'n' },
-      { word: 'album', chinese: '专辑', type: 'n' },
-      { word: 'difficult', chinese: '困难的', type: 'adj' },
-      { word: 'business', chinese: '生意', type: 'n' },
-      { word: 'busy', chinese: '忙碌的', type: 'adj' },
-      { word: 'businessman', chinese: '商人', type: 'n' },
-      { word: 'boy', chinese: '男孩', type: 'n' },
-      { word: 'buy', chinese: '买', type: 'v' },
-      { word: 'bird', chinese: '鸟', type: 'n' },
-      { word: 'beef', chinese: '牛肉', type: 'n' },
-      { word: 'bedroom', chinese: '卧室', type: 'n' },
-      { word: 'bear', chinese: '熊', type: 'n' },
-      { word: 'bottle', chinese: '瓶子', type: 'n' },
-      { word: 'banana', chinese: '香蕉', type: 'n' },
-      { word: 'butterfly', chinese: '蝴蝶', type: 'n' },
-      { word: 'number', chinese: '数字', type: 'n' },
-      { word: 'birthday', chinese: '生日', type: 'n' },
-      { word: 'bye', chinese: '再见', type: 'int' },
-      { word: 'habit', chinese: '习惯', type: 'n' },
-      { word: 'boring', chinese: '乏味的', type: 'adj' },
-      { word: 'clothes', chinese: '衣服', type: 'n' },
-      { word: 'carry', chinese: '携带', type: 'v' },
-      { word: 'collect', chinese: '收集', type: 'v' },
-      { word: 'cow', chinese: '奶牛', type: 'n' },
-      { word: 'coat', chinese: '外套', type: 'n' },
-      { word: 'copy', chinese: '复制', type: 'v' },
-      { word: 'camera', chinese: '相机', type: 'n' },
-      { word: 'capital', chinese: '首都', type: 'n' },
-      { word: 'computer', chinese: '电脑', type: 'n' },
-      { word: 'factory', chinese: '工厂', type: 'n' },
-      { word: 'mooncake', chinese: '月饼', type: 'n' },
-      { word: 'comic', chinese: '喜剧的', type: 'adj' },
-      { word: 'coffee', chinese: '咖啡', type: 'n' },
-      { word: 'circle', chinese: '圆圈', type: 'n' },
-      { word: 'ice', chinese: '冰', type: 'n' },
-      { word: 'city', chinese: '城市', type: 'n' },
-      { word: 'face', chinese: '脸', type: 'n' },
-      { word: 'recycle', chinese: '回收利用', type: 'v' },
-      { word: 'door', chinese: '门', type: 'n' },
-      { word: 'dinner', chinese: '晚餐', type: 'n' },
-      { word: 'send', chinese: '发送', type: 'v' },
-      { word: 'duck', chinese: '鸭子', type: 'n' },
-      { word: 'desk', chinese: '书桌', type: 'n' },
-      { word: 'word', chinese: '单词', type: 'n' },
-      { word: 'dictionary', chinese: '词典', type: 'n' },
-      { word: 'down', chinese: '在下方', type: 'adv' },
-      { word: 'taxi', chinese: '出租车', type: 'n' },
-      { word: 'aunt', chinese: '阿姨', type: 'n' },
-      { word: 'two', chinese: '数字2', type: 'num' },
-      { word: 'went', chinese: '去', type: 'v' },
-      { word: 'list', chinese: '清单', type: 'n' },
-      { word: 'tired', chinese: '疲劳的', type: 'adj' },
-      { word: 'ferry', chinese: '渡轮', type: 'n' },
-      { word: 'wife', chinese: '妻子', type: 'n' },
-      { word: 'four', chinese: '数字4', type: 'num' },
-      { word: 'fork', chinese: '叉子', type: 'n' },
-      { word: 'father', chinese: '爸爸', type: 'n' },
-      { word: 'february', chinese: '二月', type: 'n' },
-      { word: 'funny', chinese: '有趣的', type: 'adj' },
-      { word: 'film', chinese: '电影', type: 'n' },
-      { word: 'fifteen', chinese: '数字15', type: 'num' },
-      { word: 'gift', chinese: '礼物', type: 'n' },
-      { word: 'guess', chinese: '猜测', type: 'v' },
-      { word: 'get', chinese: '得到', type: 'v' },
-      { word: 'goal', chinese: '目标', type: 'n' },
-      { word: 'girl', chinese: '女孩', type: 'n' },
-      { word: 'goat', chinese: '山羊', type: 'n' },
-      { word: 'angry', chinese: '生气的', type: 'adj' },
-      { word: 'grandmother', chinese: '(外)祖母', type: 'n' },
-      { word: 'grandfather', chinese: '(外)祖父', type: 'n' },
-      { word: 'grandma', chinese: '(外)祖母', type: 'n' },
-      { word: 'grandpa', chinese: '(外)祖父', type: 'n' },
-      { word: 'granddaughter', chinese: '(外)孙女', type: 'n' },
-      { word: 'grandson', chinese: '外孙；孙子', type: 'n' },
-      { word: 'giraffe', chinese: '长颈鹿', type: 'n' },
-      { word: 'gym', chinese: '健身房', type: 'n' },
-      { word: 'age', chinese: '年龄', type: 'n' },
-      { word: 'large', chinese: '巨大的', type: 'adj' },
-      { word: 'magic', chinese: '魔法', type: 'n' },
-      { word: 'energy', chinese: '能量', type: 'n' },
-      { word: 'hurry', chinese: '匆忙', type: 'v' },
-      { word: 'happy', chinese: '开心的', type: 'adj' },
-      { word: 'her', chinese: '她', type: 'pron' },
-      { word: 'hill', chinese: '小山', type: 'n' },
-      { word: 'help', chinese: '帮助', type: 'v' },
-      { word: 'hand', chinese: '手', type: 'n' },
-      { word: 'helmet', chinese: '头盔', type: 'n' },
-      { word: 'have', chinese: '有', type: 'v' },
-      { word: 'hospital', chinese: '医院', type: 'n' },
-      { word: 'honest', chinese: '诚实的', type: 'adj' },
-      { word: 'hour', chinese: '小时', type: 'n' },
-      { word: 'honor', chinese: '荣耀', type: 'n' },
-      { word: 'heir', chinese: '继承人', type: 'n' },
-      { word: 'just', chinese: '正好；刚刚', type: 'adv' },
-      { word: 'jeep', chinese: '吉普车', type: 'n' },
-      { word: 'enjoy', chinese: '享受', type: 'v' },
-      { word: 'june', chinese: '六月', type: 'n' },
-      { word: 'july', chinese: '七月', type: 'n' },
-      { word: 'jump', chinese: '跳', type: 'v' },
-      { word: 'japan', chinese: '日本', type: 'n' },
-      { word: 'january', chinese: '一月', type: 'n' },
-      { word: 'kitten', chinese: '小猫', type: 'n' },
-      { word: 'kiss', chinese: '亲吻', type: 'v' },
-      { word: 'key', chinese: '钥匙', type: 'n' },
-      { word: 'kite', chinese: '风筝', type: 'n' },
-      { word: 'milk', chinese: '牛奶', type: 'n' },
-      { word: 'week', chinese: '星期', type: 'n' },
-      { word: 'kangaroo', chinese: '袋鼠', type: 'n' },
-      { word: 'little', chinese: '小的', type: 'adj' },
-      { word: 'lion', chinese: '狮子', type: 'n' },
-      { word: 'live', chinese: '生活', type: 'v' },
-      { word: 'left', chinese: '左边', type: 'n' },
-      { word: 'lost', chinese: '迷路的', type: 'adj' },
-      { word: 'bowl', chinese: '碗', type: 'n' },
-      { word: 'eleven', chinese: '数字11', type: 'num' },
-      { word: 'building', chinese: '建筑', type: 'n' },
-      { word: 'violin', chinese: '小提琴', type: 'n' },
-      { word: 'lift', chinese: '提起', type: 'v' },
-      { word: 'hotel', chinese: '酒店', type: 'n' },
-      { word: 'simple', chinese: '简单的', type: 'adj' },
-      { word: 'lively', chinese: '热闹的', type: 'adj' },
-      { word: 'yum', chinese: '表示食物好吃', type: 'excl' },
-      { word: 'meal', chinese: '餐', type: 'n' },
-      { word: 'mom', chinese: '妈妈', type: 'n' },
-      { word: 'must', chinese: '必须', type: 'modal v' },
-      { word: 'miss', chinese: '错过', type: 'v' },
-      { word: 'mango', chinese: '芒果', type: 'n' },
-      { word: 'matter', chinese: '问题', type: 'n' },
-      { word: 'morning', chinese: '早晨', type: 'n' },
-      { word: 'rain', chinese: '下雨', type: 'v' },
-      { word: 'next', chinese: '下一个的', type: 'adj' },
-      { word: 'learn', chinese: '学习', type: 'v' },
-      { word: 'evening', chinese: '晚上', type: 'n' },
-      { word: 'nineteen', chinese: '数字19', type: 'num' },
-      { word: 'son', chinese: '儿子', type: 'n' },
-      { word: 'neck', chinese: '脖子', type: 'n' },
-      { word: 'pencil', chinese: '铅笔', type: 'n' },
-      { word: 'think', chinese: '思考', type: 'v' },
-      { word: 'thank', chinese: '感谢', type: 'v' },
-      { word: 'ankle', chinese: '脚踝', type: 'n' },
-      { word: 'language', chinese: '语言', type: 'n' },
-      { word: 'english', chinese: '英语', type: 'n' },
-      { word: 'poem', chinese: '诗歌', type: 'n' },
-      { word: 'picnic', chinese: '野餐', type: 'n' },
-      { word: 'pilot', chinese: '飞行员', type: 'n' },
-      { word: 'puppy', chinese: '小狗', type: 'n' },
-      { word: 'keep', chinese: '保留', type: 'v' },
-      { word: 'puzzle', chinese: '拼图', type: 'n' },
-      { word: 'pizza', chinese: '比萨', type: 'n' },
-      { word: 'purple', chinese: '紫色', type: 'n' },
-      { word: 'policeman', chinese: '警察', type: 'n' },
-      { word: 'people', chinese: '人们', type: 'n' },
-      { word: 'piglet', chinese: '小猪', type: 'n' },
-      { word: 'chick', chinese: '小鸡', type: 'n' },
-      { word: 'lamb', chinese: '小羔羊', type: 'n' },
-      { word: 'foal', chinese: '小马驹', type: 'n' },
-      { word: 'quarter', chinese: '四分之一', type: 'n' },
-      { word: 'quiet', chinese: '安静的', type: 'adj' },
-      { word: 'quick', chinese: '快的', type: 'adj' },
-      { word: 'quit', chinese: '离开', type: 'v' },
-      { word: 'quilt', chinese: '被子', type: 'n' },
-      { word: 'quite', chinese: '相当', type: 'adv' },
-      { word: 'queen', chinese: '女王', type: 'n' },
-      { word: 'question', chinese: '问题', type: 'n' },
-      { word: 'rise', chinese: '上升', type: 'v' },
-      { word: 'round', chinese: '圆的', type: 'adj' },
-      { word: 'river', chinese: '河流', type: 'n' },
-      { word: 'rest', chinese: '休息', type: 'n' },
-      { word: 'rich', chinese: '富裕的', type: 'adj' },
-      { word: 'robot', chinese: '机器人', type: 'n' },
-      { word: 'really', chinese: '真正地', type: 'adv' },
-      { word: 'rabbit', chinese: '兔子', type: 'n' },
-      { word: 'stops', chinese: '停止', type: 'v' },
-      { word: 'salad', chinese: '沙拉', type: 'n' },
-      { word: 'seven', chinese: '数字7', type: 'num' },
-      { word: 'sale', chinese: '出售', type: 'n' },
-      { word: 'test', chinese: '测验', type: 'n' },
-      { word: 'sunny', chinese: '晴朗的', type: 'adj' },
-      { word: 'sister', chinese: '姐妹', type: 'n' },
-      { word: 'supermarket', chinese: '超市', type: 'n' },
-      { word: 'trousers', chinese: '裤子', type: 'n' },
-      { word: 'desert', chinese: '沙漠', type: 'n' },
-      { word: 'observe', chinese: '观察', type: 'v' },
-      { word: 'lose', chinese: '丢失', type: 'v' },
-      { word: 'rose', chinese: '玫瑰', type: 'n' },
-      { word: 'rulers', chinese: '尺子', type: 'n' },
-      { word: 'because', chinese: '因为', type: 'conj' },
-      { word: 'tuesday', chinese: '星期二', type: 'n' },
-      { word: 'thursday', chinese: '星期四', type: 'n' },
-      { word: 'sixteen', chinese: '数字16', type: 'num' },
-      { word: 'listen', chinese: '听', type: 'v' },
-      { word: 'fasten', chinese: '系紧', type: 'v' },
-      { word: 'castle', chinese: '城堡', type: 'n' },
-      { word: 'whistle', chinese: '哨子', type: 'n' },
-      { word: 'ballet', chinese: '芭蕾舞', type: 'n' },
-      { word: 'heavy', chinese: '重的', type: 'adj' },
-      { word: 'favorite', chinese: '最喜爱的', type: 'adj' },
-      { word: 'very', chinese: '非常', type: 'adv' },
-      { word: 'visit', chinese: '参观', type: 'v' },
-      { word: 'view', chinese: '视野', type: 'n' },
-      { word: 'video', chinese: '视频', type: 'n' },
-      { word: 'valley', chinese: '山谷', type: 'n' },
-      { word: 'twelve', chinese: '数字12', type: 'num' },
-      { word: 'vegetable', chinese: '蔬菜', type: 'n' },
-      { word: 'vote', chinese: '投票', type: 'v' },
-      { word: 'invent', chinese: '发明', type: 'v' },
-      { word: 'victory', chinese: '胜利', type: 'n' },
-      { word: 'vine', chinese: '葡萄藤', type: 'n' },
-      { word: 'volume', chinese: '体积', type: 'n' },
-      { word: 'worry', chinese: '担心', type: 'v' },
-      { word: 'window', chinese: '窗户', type: 'n' },
-      { word: 'windy', chinese: '多风的', type: 'adj' },
-      { word: 'wide', chinese: '宽的', type: 'adj' },
-      { word: 'wine', chinese: '酒', type: 'n' },
-      { word: 'winter', chinese: '冬天', type: 'n' },
-      { word: 'woman', chinese: '女人', type: 'n' },
-      { word: 'watermelon', chinese: '西瓜', type: 'n' },
-      { word: 'blueberry', chinese: '蓝莓', type: 'n' },
-      { word: 'cherry', chinese: '樱桃', type: 'n' },
-      { word: 'strawberry', chinese: '草莓', type: 'n' },
-      { word: 'plum', chinese: '李子', type: 'n' },
-      { word: 'pineapple', chinese: '菠萝', type: 'n' },
-      { word: 'excuse', chinese: '借口', type: 'n' },
-      { word: 'exercise', chinese: '锻炼', type: 'n' },
-      { word: 'expect', chinese: '期待', type: 'v' },
-      { word: 'text', chinese: '课文', type: 'n' },
-      { word: 'relax', chinese: '放松', type: 'v' },
-      { word: 'express', chinese: '表达', type: 'v' },
-      { word: 'expensive', chinese: '昂贵的', type: 'adj' },
-      { word: 'excited', chinese: '激动的', type: 'adj' },
-      { word: 'box', chinese: '盒子', type: 'n' },
-      { word: 'exact', chinese: '确切的', type: 'adj' },
-      { word: 'exam', chinese: '考试', type: 'n' },
-      { word: 'exist', chinese: '存在', type: 'v' },
-      { word: 'example', chinese: '例子', type: 'n' },
-      { word: 'yogurt', chinese: '酸奶', type: 'n' },
-      { word: 'year', chinese: '年', type: 'n' },
-      { word: 'yes', chinese: '是的', type: 'adv' },
-      { word: 'young', chinese: '年轻的', type: 'adj' },
-      { word: 'yellow', chinese: '黄色的', type: 'adj' },
-      { word: 'yesterday', chinese: '昨天', type: 'adv' },
-      { word: 'yard', chinese: '院子', type: 'n' },
-      { word: 'you', chinese: '你，你们', type: 'pron' },
-      { word: 'friendly', chinese: '友好的', type: 'adj' },
-      { word: 'candy', chinese: '糖果', type: 'n' },
-      { word: 'rainy', chinese: '下雨的', type: 'adj' },
-      { word: 'early', chinese: '早的', type: 'adj' },
-      { word: 'hobby', chinese: '兴趣爱好', type: 'n' },
-      { word: 'university', chinese: '大学', type: 'n' },
-      { word: 'twenty', chinese: '数字20', type: 'num' },
-      { word: 'thirty', chinese: '数字30', type: 'num' },
-      { word: 'forty', chinese: '数字40', type: 'num' },
-      { word: 'fifty', chinese: '数字50', type: 'num' },
-      { word: 'sixty', chinese: '数字60', type: 'num' },
-      { word: 'seventy', chinese: '数字70', type: 'num' },
-      { word: 'eighty', chinese: '数字80', type: 'num' },
-      { word: 'ninety', chinese: '数字90', type: 'num' },
-      { word: 'dry', chinese: '干燥的', type: 'adj' },
-      { word: 'my', chinese: '我的', type: 'pron' },
-      { word: 'cry', chinese: '哭', type: 'v' },
-      { word: 'by', chinese: '通过', type: 'prep' },
-      { word: 'fly', chinese: '飞', type: 'v' },
-      { word: 'try', chinese: '尝试', type: 'v' },
-      { word: 'shy', chinese: '害羞的', type: 'adj' },
-      { word: 'why', chinese: '为什么', type: 'adv' },
-      { word: 'zone', chinese: '地区', type: 'n' },
-      { word: 'maze', chinese: '迷宫', type: 'n' },
-      { word: 'zero', chinese: '数字0', type: 'num' },
-      { word: 'size', chinese: '尺码', type: 'n' },
-      { word: 'zip', chinese: '拉链', type: 'n' },
-      { word: 'prize', chinese: '奖', type: 'n' },
-      { word: 'zoo', chinese: '动物园', type: 'n' },
-      { word: 'zebra', chinese: '斑马', type: 'n' },
-      { word: 'magazine', chinese: '杂志', type: 'n' },
-      { word: 'freeze', chinese: '结冰', type: 'v' },
-    ]
-  },
-  {
-    id: 'vol2',
-    title: 'Level 2 组合',
-    icon: '📘',
-    words: [
-      { word: 'glad', chinese: '高兴的', type: 'adj' },
-      { word: 'lad', chinese: '小伙子', type: 'n' },
-      { word: 'wag', chinese: '摇摆', type: 'v' },
-      { word: 'bag', chinese: '包', type: 'n' },
-      { word: 'tag', chinese: '标签', type: 'n' },
-      { word: 'rag', chinese: '抹布', type: 'n' },
-      { word: 'flag', chinese: '旗帜', type: 'n' },
-      { word: 'drag', chinese: '拖拽', type: 'v' },
-      { word: 'bamboo', chinese: '竹子', type: 'n' },
-      { word: 'ram', chinese: '公羊', type: 'n' },
-      { word: 'dam', chinese: '水坝', type: 'n' },
-      { word: 'jam', chinese: '果酱', type: 'n' },
-      { word: 'ham', chinese: '火腿', type: 'n' },
-      { word: 'hamburger', chinese: '汉堡', type: 'n' },
-      { word: 'ban', chinese: '禁止', type: 'v' },
-      { word: 'lap', chinese: '大腿部', type: 'n' },
-      { word: 'clap', chinese: '鼓掌', type: 'v' },
-      { word: 'trap', chinese: '陷阱', type: 'n' },
-      { word: 'snap', chinese: '咔嚓声', type: 'n' },
-      { word: 'wrap', chinese: '包裹', type: 'v' },
-      { word: 'flap', chinese: '拍打', type: 'v' },
-      { word: 'slap', chinese: '拍打', type: 'v' },
-      { word: 'snack', chinese: '点心', type: 'n' },
-      { word: 'pack', chinese: '包装', type: 'v' },
-      { word: 'track', chinese: '小道', type: 'n' },
-      { word: 'black', chinese: '黑色的', type: 'adj' },
-      { word: 'crack', chinese: '使破裂', type: 'v' },
-      { word: 'quack', chinese: '(鸭子)嘎嘎叫', type: 'v' },
-      { word: 'brand', chinese: '品牌', type: 'n' },
-      { word: 'band', chinese: '乐队', type: 'n' },
-      { word: 'sand', chinese: '沙子', type: 'n' },
-      { word: 'land', chinese: '土地', type: 'n' },
-      { word: 'stand', chinese: '站立', type: 'v' },
-      { word: 'understand', chinese: '理解', type: 'v' },
-      { word: 'blank', chinese: '空白的', type: 'adj' },
-      { word: 'tank', chinese: '箱；坦克', type: 'n' },
-      { word: 'rank', chinese: '等级', type: 'n' },
-      { word: 'hank', chinese: '一卷', type: 'n' },
-      { word: 'frank', chinese: '坦率的', type: 'adj' },
-      { word: 'sank', chinese: '下沉', type: 'v' },
-      { word: 'shed', chinese: '棚屋', type: 'n' },
-      { word: 'keg', chinese: '小桶', type: 'n' },
-      { word: 'sense', chinese: '感觉', type: 'n' },
-      { word: 'men', chinese: '男人', type: 'n' },
-      { word: 'hen', chinese: '母鸡', type: 'n' },
-      { word: 'then', chinese: '然后', type: 'adv' },
-      { word: 'when', chinese: '什么时候', type: 'pron' },
-      { word: 'depend', chinese: '取决于', type: 'v' },
-      { word: 'attend', chinese: '参加', type: 'v' },
-      { word: 'ending', chinese: '结束', type: 'n' },
-      { word: 'tent', chinese: '帐篷', type: 'n' },
-      { word: 'cent', chinese: '美分', type: 'n' },
-      { word: 'french', chinese: '法国人', type: 'n' },
-      { word: 'set', chinese: '设置', type: 'v' },
-      { word: 'jet', chinese: '喷气式飞机', type: 'n' },
-      { word: 'let', chinese: '让', type: 'v' },
-      { word: 'bet', chinese: '打赌', type: 'v' },
-      { word: 'net', chinese: '网', type: 'n' },
-      { word: 'yet', chinese: '但是', type: 'conj' },
-      { word: 'wet', chinese: '湿的', type: 'adj' },
-      { word: 'forget', chinese: '忘记', type: 'v' },
-      { word: 'spell', chinese: '拼写', type: 'v' },
-      { word: 'yell', chinese: '大喊', type: 'v' },
-      { word: 'bell', chinese: '铃', type: 'n' },
-      { word: 'tell', chinese: '告诉', type: 'v' },
-      { word: 'sell', chinese: '售卖', type: 'v' },
-      { word: 'well', chinese: '很好地', type: 'adv' },
-      { word: 'smell', chinese: '闻', type: 'v' },
-      { word: 'shell', chinese: '贝壳', type: 'n' },
-      { word: 'lend', chinese: '借出', type: 'v' },
-      { word: 'bend', chinese: '弯曲', type: 'v' },
-      { word: 'mend', chinese: '修理', type: 'v' },
-      { word: 'spend', chinese: '花费', type: 'v' },
-      { word: 'west', chinese: '西方', type: 'n' },
-      { word: 'nest', chinese: '鸟巢', type: 'n' },
-      { word: 'vest', chinese: '背心', type: 'n' },
-      { word: 'best', chinese: '最好的', type: 'adj' },
-      { word: 'contest', chinese: '比赛', type: 'n' },
-      { word: 'pest', chinese: '害虫', type: 'n' },
-      { word: 'mess', chinese: '脏乱', type: 'n' },
-      { word: 'bless', chinese: '祝福', type: 'v' },
-      { word: 'chess', chinese: '国际象棋', type: 'n' },
-      { word: 'dress', chinese: '连衣裙', type: 'n' },
-      { word: 'less', chinese: '更少的', type: 'adj' },
-      { word: 'did', chinese: '做', type: 'v' },
-      { word: 'lid', chinese: '盖子', type: 'n' },
-      { word: 'kid', chinese: '小孩', type: 'n' },
-      { word: 'bid', chinese: '出价', type: 'v' },
-      { word: 'hid', chinese: '隐藏', type: 'v' },
-      { word: 'twig', chinese: '树枝', type: 'n' },
-      { word: 'thin', chinese: '薄的', type: 'adj' },
-      { word: 'skin', chinese: '皮肤', type: 'n' },
-      { word: 'chin', chinese: '下巴', type: 'n' },
-      { word: 'rip', chinese: '撕裂', type: 'v' },
-      { word: 'lip', chinese: '嘴唇', type: 'n' },
-      { word: 'ship', chinese: '船', type: 'n' },
-      { word: 'tip', chinese: '尖端', type: 'n' },
-      { word: 'sip', chinese: '小口喝', type: 'v' },
-      { word: 'hip', chinese: '臀部', type: 'n' },
-      { word: 'dip', chinese: '蘸', type: 'v' },
-      { word: 'chip', chinese: '炸薯条', type: 'n' },
-      { word: 'trip', chinese: '旅行', type: 'n' },
-      { word: 'spit', chinese: '吐', type: 'v' },
-      { word: 'knit', chinese: '针织', type: 'v' },
-      { word: 'six', chinese: '数字6', type: 'num' },
-      { word: 'fix', chinese: '修理', type: 'v' },
-      { word: 'mix', chinese: '混合', type: 'v' },
-      { word: 'phoenix', chinese: '凤凰', type: 'n' },
-      { word: 'till', chinese: '直到', type: 'conj' },
-      { word: 'kill', chinese: '杀死', type: 'v' },
-      { word: 'bill', chinese: '账单', type: 'n' },
-      { word: 'fill', chinese: '使充满', type: 'v' },
-      { word: 'pill', chinese: '药丸', type: 'n' },
-      { word: 'mill', chinese: '磨坊', type: 'n' },
-      { word: 'will', chinese: '将要', type: 'modal v' },
-      { word: 'pick', chinese: '采摘', type: 'v' },
-      { word: 'click', chinese: '点击', type: 'v' },
-      { word: 'lick', chinese: '舔', type: 'v' },
-      { word: 'sick', chinese: '生病的', type: 'adj' },
-      { word: 'kick', chinese: '踢', type: 'v' },
-      { word: 'tick', chinese: '打钩', type: 'v' },
-      { word: 'stick', chinese: '树枝', type: 'n' },
-      { word: 'brick', chinese: '砖块', type: 'n' },
-      { word: 'wish', chinese: '希望', type: 'v' },
-      { word: 'finish', chinese: '完成', type: 'v' },
-      { word: 'dish', chinese: '碟盘', type: 'n' },
-      { word: 'fish', chinese: '鱼', type: 'n' },
-      { word: 'polish', chinese: '擦亮', type: 'v' },
-      { word: 'punish', chinese: '惩罚', type: 'v' },
-      { word: 'rubbish', chinese: '垃圾', type: 'n' },
-      { word: 'sob', chinese: '抽泣', type: 'v' },
-      { word: 'lobster', chinese: '龙虾', type: 'n' },
-      { word: 'cod', chinese: '鳕鱼', type: 'n' },
-      { word: 'nod', chinese: '点头', type: 'v' },
-      { word: 'pod', chinese: '豆荚', type: 'n' },
-      { word: 'rod', chinese: '竿', type: 'n' },
-      { word: 'god', chinese: '上帝', type: 'n' },
-      { word: 'sod', chinese: '草皮', type: 'n' },
-      { word: 'jog', chinese: '慢跑', type: 'v' },
-      { word: 'frog', chinese: '青蛙', type: 'n' },
-      { word: 'pop', chinese: '流行的', type: 'adj' },
-      { word: 'stop', chinese: '停下', type: 'v' },
-      { word: 'cop', chinese: '警察', type: 'n' },
-      { word: 'mop', chinese: '拖把', type: 'n' },
-      { word: 'shop', chinese: '商店', type: 'n' },
-      { word: 'drop', chinese: '落下', type: 'v' },
-      { word: 'chop', chinese: '砍', type: 'v' },
-      { word: 'crop', chinese: '庄稼', type: 'n' },
-      { word: 'plot', chinese: '情节', type: 'n' },
-      { word: 'slot', chinese: '投币口', type: 'n' },
-      { word: 'shot', chinese: '射击', type: 'n' },
-      { word: 'ox', chinese: '牛', type: 'n' },
-      { word: 'cox', chinese: '舵手', type: 'n' },
-      { word: 'lox', chinese: '熏鲑鱼', type: 'n' },
-      { word: 'pox', chinese: '痘', type: 'n' },
-      { word: 'dock', chinese: '码头', type: 'n' },
-      { word: 'block', chinese: '阻碍', type: 'n' },
-      { word: 'sock', chinese: '袜子', type: 'n' },
-      { word: 'rock', chinese: '岩石', type: 'n' },
-      { word: 'lock', chinese: '锁', type: 'n' },
-      { word: 'hock', chinese: '抵押', type: 'v' },
-      { word: 'clock', chinese: '时钟', type: 'n' },
-      { word: 'knock', chinese: '敲', type: 'v' },
-      { word: 'public', chinese: '公众的', type: 'adj' },
-      { word: 'hub', chinese: '中心', type: 'n' },
-      { word: 'cub', chinese: '幼崽', type: 'n' },
-      { word: 'tub', chinese: '盆', type: 'n' },
-      { word: 'rub', chinese: '擦', type: 'v' },
-      { word: 'pub', chinese: '酒吧', type: 'n' },
-      { word: 'club', chinese: '俱乐部', type: 'n' },
-      { word: 'subway', chinese: '地铁', type: 'n' },
-      { word: 'bud', chinese: '花蕾', type: 'n' },
-      { word: 'thud', chinese: '砰的一声', type: 'n' },
-      { word: 'stud', chinese: '螺柱', type: 'n' },
-      { word: 'mud', chinese: '泥', type: 'n' },
-      { word: 'bun', chinese: '圆面包', type: 'n' },
-      { word: 'fun', chinese: '乐趣', type: 'n' },
-      { word: 'gun', chinese: '枪', type: 'n' },
-      { word: 'tun', chinese: '大酒桶', type: 'n' },
-      { word: 'up', chinese: '向上', type: 'adv' },
-      { word: 'pup', chinese: '小狗', type: 'n' },
-      { word: 'cup', chinese: '杯子', type: 'n' },
-      { word: 'hiccup', chinese: '打嗝', type: 'n' },
-      { word: 'upstairs', chinese: '在楼上', type: 'adv' },
-      { word: 'uphill', chinese: '向山上', type: 'adv' },
-      { word: 'peanut', chinese: '花生', type: 'n' },
-      { word: 'but', chinese: '但是', type: 'conj' },
-      { word: 'nut', chinese: '坚果', type: 'n' },
-      { word: 'hut', chinese: '小屋', type: 'n' },
-      { word: 'shut', chinese: '关闭', type: 'v' },
-      { word: 'coconut', chinese: '椰子', type: 'n' },
-      { word: 'walnut', chinese: '核桃', type: 'n' },
-      { word: 'stuck', chinese: '卡住的', type: 'adj' },
-      { word: 'puck', chinese: '冰球', type: 'n' },
-      { word: 'luck', chinese: '运气', type: 'n' },
-      { word: 'buck', chinese: '美元', type: 'n' },
-      { word: 'suck', chinese: '吸', type: 'v' },
-      { word: 'truck', chinese: '卡车', type: 'n' },
-      { word: 'tuck', chinese: '塞', type: 'v' },
-      { word: 'gush', chinese: '涌出', type: 'v' },
-      { word: 'hush', chinese: '(使)安静', type: 'v' },
-      { word: 'mush', chinese: '玉米粥', type: 'n' },
-      { word: 'rush', chinese: '冲', type: 'v' },
-      { word: 'lush', chinese: '茂盛的', type: 'adj' },
-      { word: 'blush', chinese: '脸红', type: 'v' },
-      { word: 'crush', chinese: '压碎', type: 'v' },
-      { word: 'brush', chinese: '刷子', type: 'n' },
-      { word: 'dump', chinese: '倾倒', type: 'v' },
-      { word: 'lump', chinese: '肿块', type: 'n' },
-      { word: 'pump', chinese: '泵', type: 'n' },
-      { word: 'bump', chinese: '碰撞', type: 'v' },
-      { word: 'dumpling', chinese: '饺子', type: 'n' },
-      { word: 'sunk', chinese: '下沉', type: 'v' },
-      { word: 'junk', chinese: '垃圾', type: 'n' },
-      { word: 'punk', chinese: '朋克', type: 'n' },
-      { word: 'trunk', chinese: '树干', type: 'n' },
-      { word: 'skunk', chinese: '臭鼬', type: 'n' },
-      { word: 'drunk', chinese: '喝醉的', type: 'adj' },
-      { word: 'blood', chinese: '血液', type: 'n' },
-      { word: 'blow', chinese: '吹', type: 'v' },
-      { word: 'blue', chinese: '蓝色的', type: 'adj' },
-      { word: 'blackboard', chinese: '黑板', type: 'n' },
-      { word: 'clean', chinese: '打扫', type: 'v' },
-      { word: 'close', chinese: '关闭', type: 'v' },
-      { word: 'climb', chinese: '爬', type: 'v' },
-      { word: 'class', chinese: '班级', type: 'n' },
-      { word: 'cloud', chinese: '云朵', type: 'n' },
-      { word: 'classroom', chinese: '教室', type: 'n' },
-      { word: 'clay', chinese: '黏土', type: 'n' },
-      { word: 'clever', chinese: '聪明的', type: 'adj' },
-      { word: 'classmate', chinese: '同学', type: 'n' },
-      { word: 'clerk', chinese: '职员', type: 'n' },
-      { word: 'clown', chinese: '小丑', type: 'n' },
-      { word: 'floor', chinese: '地板', type: 'n' },
-      { word: 'flu', chinese: '流感', type: 'n' },
-      { word: 'flat', chinese: '公寓', type: 'n' },
-      { word: 'float', chinese: '浮动', type: 'v' },
-      { word: 'flower', chinese: '花', type: 'n' },
-      { word: 'globe', chinese: '地球仪', type: 'n' },
-      { word: 'glue', chinese: '胶水', type: 'n' },
-      { word: 'glow', chinese: '发光', type: 'v' },
-      { word: 'glove', chinese: '手套', type: 'n' },
-      { word: 'place', chinese: '地方', type: 'n' },
-      { word: 'player', chinese: '运动员', type: 'n' },
-      { word: 'plain', chinese: '平原', type: 'n' },
-      { word: 'plan', chinese: '打算', type: 'v' },
-      { word: 'plane', chinese: '飞机', type: 'n' },
-      { word: 'plate', chinese: '盘子', type: 'n' },
-      { word: 'please', chinese: '请', type: 'int' },
-      { word: 'playground', chinese: '游乐场', type: 'n' },
-      { word: 'slip', chinese: '滑倒', type: 'v' },
-      { word: 'slug', chinese: '蛞蝓', type: 'n' },
-      { word: 'slow', chinese: '缓慢的', type: 'adj' },
-      { word: 'sleep', chinese: '睡觉', type: 'v' },
-      { word: 'slide', chinese: '滑行', type: 'v' },
-      { word: 'brother', chinese: '兄弟', type: 'n' },
-      { word: 'bring', chinese: '带来', type: 'v' },
-      { word: 'bridge', chinese: '桥', type: 'n' },
-      { word: 'breakfast', chinese: '早餐', type: 'n' },
-      { word: 'break', chinese: '打破', type: 'v' },
-      { word: 'brain', chinese: '大脑', type: 'n' },
-      { word: 'broom', chinese: '扫帚', type: 'n' },
-      { word: 'brown', chinese: '棕色的', type: 'adj' },
-      { word: 'bride', chinese: '新娘', type: 'n' },
-      { word: 'brave', chinese: '勇敢的', type: 'adj' },
-      { word: 'british', chinese: '英国人', type: 'n' },
-      { word: 'crab', chinese: '螃蟹', type: 'n' },
-      { word: 'cross', chinese: '横穿', type: 'v' },
-      { word: 'cream', chinese: '奶油', type: 'n' },
-      { word: 'crown', chinese: '皇冠', type: 'n' },
-      { word: 'crayon', chinese: '蜡笔', type: 'n' },
-      { word: 'present', chinese: '礼物', type: 'n' },
-      { word: 'price', chinese: '价格', type: 'n' },
-      { word: 'print', chinese: '打印', type: 'v' },
-      { word: 'proud', chinese: '自豪的', type: 'adj' },
-      { word: 'practice', chinese: '练习', type: 'n' },
-      { word: 'group', chinese: '组', type: 'n' },
-      { word: 'grape', chinese: '葡萄', type: 'n' },
-      { word: 'green', chinese: '绿色的', type: 'adj' },
-      { word: 'grass', chinese: '草', type: 'n' },
-      { word: 'great', chinese: '伟大的', type: 'adj' },
-      { word: 'grand', chinese: '宏伟的', type: 'adj' },
-      { word: 'progress', chinese: '进步', type: 'n' },
-      { word: 'grammar', chinese: '语法', type: 'n' },
-      { word: 'greet', chinese: '问候', type: 'v' },
-      { word: 'degree', chinese: '度数', type: 'n' },
-      { word: 'background', chinese: '背景', type: 'n' },
-      { word: 'grade', chinese: '年级', type: 'n' },
-      { word: 'regret', chinese: '后悔', type: 'v' },
-      { word: 'program', chinese: '程序', type: 'n' },
-      { word: 'front', chinese: '前面', type: 'n' },
-      { word: 'friend', chinese: '朋友', type: 'n' },
-      { word: 'fresh', chinese: '新鲜的', type: 'adj' },
-      { word: 'from', chinese: '来自', type: 'prep' },
-      { word: 'fridge', chinese: '冰箱', type: 'n' },
-      { word: 'free', chinese: '自由的', type: 'adj' },
-      { word: 'friday', chinese: '星期五', type: 'n' },
-      { word: 'trumpet', chinese: '小号', type: 'n' },
-      { word: 'train', chinese: '火车', type: 'n' },
-      { word: 'tree', chinese: '树', type: 'n' },
-      { word: 'true', chinese: '真实的', type: 'adj' },
-      { word: 'traffic', chinese: '交通', type: 'n' },
-      { word: 'travel', chinese: '旅行', type: 'v' },
-      { word: 'traditional', chinese: '传统的', type: 'adj' },
-      { word: 'dream', chinese: '梦想', type: 'n' },
-      { word: 'drum', chinese: '鼓', type: 'n' },
-      { word: 'drink', chinese: '喝', type: 'v' },
-      { word: 'driver', chinese: '司机', type: 'n' },
-      { word: 'dragon', chinese: '龙', type: 'n' },
-      { word: 'drill', chinese: '钻头', type: 'n' },
-      { word: 'drama', chinese: '戏剧', type: 'n' },
-      { word: 'small', chinese: '小的', type: 'adj' },
-      { word: 'smile', chinese: '微笑', type: 'v' },
-      { word: 'smog', chinese: '雾霾', type: 'n' },
-      { word: 'smoke', chinese: '烟', type: 'n' },
-      { word: 'smart', chinese: '聪明的', type: 'adj' },
-      { word: 'snake', chinese: '蛇', type: 'n' },
-      { word: 'snail', chinese: '蜗牛', type: 'n' },
-      { word: 'snowy', chinese: '下雪的', type: 'adj' },
-      { word: 'swim', chinese: '游泳', type: 'v' },
-      { word: 'sweep', chinese: '打扫', type: 'v' },
-      { word: 'sweater', chinese: '毛衣', type: 'n' },
-      { word: 'swan', chinese: '天鹅', type: 'n' },
-      { word: 'swing', chinese: '秋千', type: 'n' },
-      { word: 'sweet', chinese: '甜的', type: 'adj' },
-      { word: 'scary', chinese: '可怕的', type: 'adj' },
-      { word: 'scan', chinese: '扫描', type: 'v' },
-      { word: 'score', chinese: '分数', type: 'n' },
-      { word: 'scarf', chinese: '围巾', type: 'n' },
-      { word: 'scale', chinese: '规模', type: 'n' },
-      { word: 'scared', chinese: '害怕的', type: 'adj' },
-      { word: 'skirt', chinese: '短裙', type: 'n' },
-      { word: 'sky', chinese: '天空', type: 'n' },
-      { word: 'ski', chinese: '滑雪', type: 'v' },
-      { word: 'skill', chinese: '技巧', type: 'n' },
-      { word: 'skate', chinese: '滑冰', type: 'v' },
-      { word: 'speak', chinese: '说', type: 'v' },
-      { word: 'spider', chinese: '蜘蛛', type: 'n' },
-      { word: 'speed', chinese: '速度', type: 'n' },
-      { word: 'sport', chinese: '体育运动', type: 'n' },
-      { word: 'space', chinese: '太空', type: 'n' },
-      { word: 'spoon', chinese: '勺子', type: 'n' },
-      { word: 'special', chinese: '特殊的', type: 'adj' },
-      { word: 'stairs', chinese: '楼梯', type: 'n' },
-      { word: 'stone', chinese: '石头', type: 'n' },
-      { word: 'study', chinese: '学习', type: 'v' },
-      { word: 'still', chinese: '仍然', type: 'adv' },
-      { word: 'start', chinese: '开始', type: 'v' },
-      { word: 'star', chinese: '星星', type: 'n' },
-      { word: 'stay', chinese: '停留', type: 'v' },
-      { word: 'story', chinese: '故事', type: 'n' },
-      { word: 'storybook', chinese: '故事书', type: 'n' },
-      { word: 'scream', chinese: '尖叫', type: 'v' },
-      { word: 'script', chinese: '脚本', type: 'n' },
-      { word: 'screen', chinese: '屏幕', type: 'n' },
-      { word: 'scratch', chinese: '划痕', type: 'n' },
-      { word: 'straight', chinese: '直的', type: 'adj' },
-      { word: 'strict', chinese: '严格的', type: 'adj' },
-      { word: 'street', chinese: '街道', type: 'n' },
-      { word: 'strong', chinese: '强壮的', type: 'adj' },
-      { word: 'strange', chinese: '奇怪的', type: 'adj' },
-      { word: 'spring', chinese: '春天', type: 'n' },
-      { word: 'spray', chinese: '喷雾', type: 'n' },
-      { word: 'sprite', chinese: '精灵', type: 'n' },
-      { word: 'spread', chinese: '传播', type: 'v' },
-      { word: 'split', chinese: '裂开', type: 'v' },
-      { word: 'spleen', chinese: '脾脏', type: 'n' },
-      { word: 'splash', chinese: '飞溅', type: 'v' },
-      { word: 'splendid', chinese: '辉煌的', type: 'adj' },
-      { word: 'squirrel', chinese: '松鼠', type: 'n' },
-      { word: 'squid', chinese: '鱿鱼', type: 'n' },
-      { word: 'square', chinese: '正方形', type: 'n' },
-      { word: 'squeeze', chinese: '挤压', type: 'v' },
-    ]
-  },
-  {
-    id: 'vol3',
-    title: 'Level 3 进阶',
-    icon: '📙',
-    words: [
-      { word: 'chase', chinese: '追逐', type: 'v' },
-      { word: 'same', chinese: '相同的', type: 'adj' },
-      { word: 'game', chinese: '游戏', type: 'n' },
-      { word: 'name', chinese: '名字', type: 'n' },
-      { word: 'gave', chinese: '给', type: 'v' },
-      { word: 'cave', chinese: '山洞', type: 'n' },
-      { word: 'save', chinese: '救助', type: 'v' },
-      { word: 'tape', chinese: '胶带', type: 'n' },
-      { word: 'wake', chinese: '唤醒', type: 'v' },
-      { word: 'made', chinese: '制造', type: 'v' },
-      { word: 'hate', chinese: '讨厌', type: 'v' },
-      { word: 'state', chinese: '状态', type: 'n' },
-      { word: 'nine', chinese: '数字9', type: 'num' },
-      { word: 'mine', chinese: '我的', type: 'pron' },
-      { word: 'fine', chinese: '很好的', type: 'adj' },
-      { word: 'line', chinese: '线条', type: 'n' },
-      { word: 'beside', chinese: '在……旁边', type: 'prep' },
-      { word: 'lune', chinese: '半月形', type: 'n' },
-      { word: 'sail', chinese: '航行', type: 'v' },
-      { word: 'nail', chinese: '指甲', type: 'n' },
-      { word: 'tail', chinese: '尾巴', type: 'n' },
-      { word: 'paint', chinese: '油漆', type: 'n' },
-      { word: 'afraid', chinese: '害怕的', type: 'adj' },
-      { word: 'mail', chinese: '邮件', type: 'n' },
-      { word: 'wait', chinese: '等待', type: 'v' },
-      { word: 'fail', chinese: '失败', type: 'v' },
-      { word: 'away', chinese: '离开', type: 'adv' },
-      { word: 'way', chinese: '路；方法', type: 'n' },
-      { word: 'day', chinese: '天', type: 'n' },
-      { word: 'say', chinese: '说话', type: 'v' },
-      { word: 'may', chinese: '5月', type: 'n' },
-      { word: 'pay', chinese: '支付', type: 'v' },
-      { word: 'play', chinese: '玩', type: 'v' },
-      { word: 'sunday', chinese: '星期天', type: 'n' },
-      { word: 'bay', chinese: '海湾', type: 'n' },
-      { word: 'naughty', chinese: '顽皮的', type: 'adj' },
-      { word: 'sauce', chinese: '酱', type: 'n' },
-      { word: 'cause', chinese: '造成', type: 'v' },
-      { word: 'fault', chinese: '过错', type: 'n' },
-      { word: 'author', chinese: '作者', type: 'n' },
-      { word: 'august', chinese: '8月', type: 'n' },
-      { word: 'daughter', chinese: '女儿', type: 'n' },
-      { word: 'paw', chinese: '爪子', type: 'n' },
-      { word: 'raw', chinese: '生的', type: 'adj' },
-      { word: 'jaw', chinese: '下巴', type: 'n' },
-      { word: 'law', chinese: '法律', type: 'n' },
-      { word: 'draw', chinese: '画', type: 'v' },
-      { word: 'awful', chinese: '糟糕的', type: 'adj' },
-      { word: 'saw', chinese: '看见', type: 'v' },
-      { word: 'hawk', chinese: '鹰', type: 'n' },
-      { word: 'chalk', chinese: '粉笔', type: 'n' },
-      { word: 'talk', chinese: '谈话', type: 'v' },
-      { word: 'walk', chinese: '步行', type: 'v' },
-      { word: 'stalk', chinese: '茎秆', type: 'n' },
-      { word: 'calm', chinese: '平静的', type: 'adj' },
-      { word: 'half', chinese: '一半', type: 'n' },
-      { word: 'palm', chinese: '手掌', type: 'n' },
-      { word: 'almond', chinese: '杏仁', type: 'n' },
-      { word: 'all', chinese: '所有', type: 'pron' },
-      { word: 'call', chinese: '打电话', type: 'v' },
-      { word: 'tall', chinese: '高的', type: 'adj' },
-      { word: 'wall', chinese: '墙', type: 'n' },
-      { word: 'fall', chinese: '落下', type: 'v' },
-      { word: 'hall', chinese: '大厅', type: 'n' },
-      { word: 'mall', chinese: '商场', type: 'n' },
-      { word: 'ball', chinese: '球', type: 'n' },
-      { word: 'basketball', chinese: '篮球', type: 'n' },
-      { word: 'baseball', chinese: '棒球', type: 'n' },
-      { word: 'volleyball', chinese: '排球', type: 'n' },
-      { word: 'football', chinese: '足球', type: 'n' },
-      { word: 'handball', chinese: '手球', type: 'n' },
-      { word: 'season', chinese: '季节', type: 'n' },
-      { word: 'tea', chinese: '茶', type: 'n' },
-      { word: 'eat', chinese: '吃', type: 'v' },
-      { word: 'leaf', chinese: '树叶', type: 'n' },
-      { word: 'read', chinese: '阅读', type: 'v' },
-      { word: 'teacher', chinese: '教师', type: 'n' },
-      { word: 'sea', chinese: '大海', type: 'n' },
-      { word: 'each', chinese: '每个', type: 'pron' },
-      { word: 'bean', chinese: '豆', type: 'n' },
-      { word: 'cheap', chinese: '便宜的', type: 'adj' },
-      { word: 'east', chinese: '东方', type: 'n' },
-      { word: 'beach', chinese: '沙滩', type: 'n' },
-      { word: 'seal', chinese: '海豹', type: 'n' },
-      { word: 'easy', chinese: '简单的', type: 'adj' },
-      { word: 'team', chinese: '团队', type: 'n' },
-      { word: 'teach', chinese: '教', type: 'v' },
-      { word: 'peace', chinese: '和平', type: 'n' },
-      { word: 'bread', chinese: '面包', type: 'n' },
-      { word: 'ready', chinese: '准备好的', type: 'adj' },
-      { word: 'head', chinese: '头', type: 'n' },
-      { word: 'health', chinese: '健康', type: 'n' },
-      { word: 'dead', chinese: '死亡的', type: 'adj' },
-      { word: 'breath', chinese: '呼吸', type: 'n' },
-      { word: 'weather', chinese: '天气', type: 'n' },
-      { word: 'steak', chinese: '牛排', type: 'n' },
-      { word: 'weekend', chinese: '周末', type: 'n' },
-      { word: 'see', chinese: '看见', type: 'v' },
-      { word: 'feet', chinese: '脚', type: 'n' },
-      { word: 'meet', chinese: '遇见', type: 'v' },
-      { word: 'deep', chinese: '深的', type: 'adj' },
-      { word: 'need', chinese: '需要', type: 'v' },
-      { word: 'between', chinese: '在……中间', type: 'prep' },
-      { word: 'thirteen', chinese: '13', type: 'num' },
-      { word: 'fourteen', chinese: '14', type: 'num' },
-      { word: 'seventeen', chinese: '17', type: 'num' },
-      { word: 'eighteen', chinese: '18', type: 'num' },
-      { word: 'knew', chinese: '知道', type: 'v' },
-      { word: 'few', chinese: '很少的', type: 'adj' },
-      { word: 'new', chinese: '新的', type: 'adj' },
-      { word: 'dew', chinese: '露水', type: 'n' },
-      { word: 'mew', chinese: '猫叫声', type: 'n' },
-      { word: 'nephew', chinese: '侄子', type: 'n' },
-      { word: 'threw', chinese: '抛', type: 'v' },
-      { word: 'drew', chinese: '画', type: 'v' },
-      { word: 'crew', chinese: '船员', type: 'n' },
-      { word: 'grew', chinese: '成长', type: 'v' },
-      { word: 'blew', chinese: '吹', type: 'v' },
-      { word: 'flew', chinese: '飞', type: 'v' },
-      { word: 'obey', chinese: '遵守', type: 'v' },
-      { word: 'hey', chinese: '嘿', type: 'int' },
-      { word: 'they', chinese: '他们', type: 'pron' },
-      { word: 'grey', chinese: '灰色的', type: 'adj' },
-      { word: 'prey', chinese: '猎物', type: 'n' },
-      { word: 'whey', chinese: '乳清', type: 'n' },
-      { word: 'hockey', chinese: '曲棍球', type: 'n' },
-      { word: 'donkey', chinese: '驴', type: 'n' },
-      { word: 'honey', chinese: '蜂蜜', type: 'n' },
-      { word: 'turkey', chinese: '火鸡', type: 'n' },
-      { word: 'journey', chinese: '旅行', type: 'n' },
-      { word: 'niece', chinese: '侄女', type: 'n' },
-      { word: 'thief', chinese: '小偷', type: 'n' },
-      { word: 'field', chinese: '田地', type: 'n' },
-      { word: 'piece', chinese: '块', type: 'n' },
-      { word: 'brief', chinese: '简短的', type: 'adj' },
-      { word: 'relief', chinese: '解脱', type: 'n' },
-      { word: 'tie', chinese: '领带', type: 'n' },
-      { word: 'lie', chinese: '平躺', type: 'v' },
-      { word: 'die', chinese: '死亡', type: 'v' },
-      { word: 'pie', chinese: '馅饼', type: 'n' },
-      { word: 'might', chinese: '可能', type: 'modal v' },
-      { word: 'tight', chinese: '紧的', type: 'adj' },
-      { word: 'right', chinese: '正确的', type: 'adj' },
-      { word: 'high', chinese: '高的', type: 'adj' },
-      { word: 'light', chinese: '灯', type: 'n' },
-      { word: 'fight', chinese: '打架', type: 'n' },
-      { word: 'sight', chinese: '视野', type: 'n' },
-      { word: 'flight', chinese: '航班', type: 'n' },
-      { word: 'night', chinese: '夜晚', type: 'n' },
-      { word: 'bright', chinese: '明亮的', type: 'adj' },
-      { word: 'midnight', chinese: '午夜', type: 'n' },
-      { word: 'flashlight', chinese: '手电筒', type: 'n' },
-      { word: 'moonlight', chinese: '月光', type: 'n' },
-      { word: 'overnight', chinese: '一夜之间的', type: 'adj' },
-      { word: 'sunlight', chinese: '阳光', type: 'n' },
-      { word: 'boat', chinese: '小船', type: 'n' },
-      { word: 'road', chinese: '道路', type: 'n' },
-      { word: 'load', chinese: '装载', type: 'v' },
-      { word: 'oak', chinese: '橡树', type: 'n' },
-      { word: 'soap', chinese: '肥皂', type: 'n' },
-      { word: 'voice', chinese: '嗓音', type: 'n' },
-      { word: 'oil', chinese: '油', type: 'n' },
-      { word: 'spoil', chinese: '溺爱', type: 'v' },
-      { word: 'join', chinese: '加入', type: 'v' },
-      { word: 'boil', chinese: '煮沸', type: 'v' },
-      { word: 'soil', chinese: '土壤', type: 'n' },
-      { word: 'choice', chinese: '选择', type: 'n' },
-      { word: 'coin', chinese: '硬币', type: 'n' },
-      { word: 'point', chinese: '指向', type: 'v' },
-      { word: 'noisy', chinese: '吵闹的', type: 'adj' },
-      { word: 'toilet', chinese: '马桶', type: 'n' },
-      { word: 'poison', chinese: '毒药', type: 'n' },
-      { word: 'soy', chinese: '大豆', type: 'n' },
-      { word: 'toy', chinese: '玩具', type: 'n' },
-      { word: 'joy', chinese: '高兴', type: 'n' },
-      { word: 'loyal', chinese: '忠诚的', type: 'adj' },
-      { word: 'destroy', chinese: '破坏', type: 'v' },
-      { word: 'balloon', chinese: '气球', type: 'n' },
-      { word: 'soon', chinese: '不久', type: 'adv' },
-      { word: 'food', chinese: '食物', type: 'n' },
-      { word: 'moon', chinese: '月亮', type: 'n' },
-      { word: 'too', chinese: '也', type: 'adv' },
-      { word: 'tool', chinese: '工具', type: 'n' },
-      { word: 'cool', chinese: '凉爽的', type: 'adj' },
-      { word: 'tooth', chinese: '牙齿', type: 'n' },
-      { word: 'noodles', chinese: '面条', type: 'n' },
-      { word: 'room', chinese: '房间', type: 'n' },
-      { word: 'choose', chinese: '选择', type: 'v' },
-      { word: 'pool', chinese: '泳池', type: 'n' },
-      { word: 'school', chinese: '学校', type: 'n' },
-      { word: 'wood', chinese: '木头', type: 'n' },
-      { word: 'wool', chinese: '羊毛', type: 'n' },
-      { word: 'cook', chinese: '厨师', type: 'n' },
-      { word: 'foot', chinese: '脚', type: 'n' },
-      { word: 'look', chinese: '看', type: 'v' },
-      { word: 'good', chinese: '好的', type: 'adj' },
-      { word: 'book', chinese: '书', type: 'n' },
-      { word: 'stood', chinese: '站立', type: 'v' },
-      { word: 'flood', chinese: '洪水', type: 'n' },
-      { word: 'hoe', chinese: '锄头', type: 'n' },
-      { word: 'toe', chinese: '脚趾', type: 'n' },
-      { word: 'doe', chinese: '母鹿', type: 'n' },
-      { word: 'roe', chinese: '鱼卵', type: 'n' },
-      { word: 'shoe', chinese: '鞋子', type: 'n' },
-      { word: 'canoe', chinese: '独木舟', type: 'n' },
-      { word: 'outside', chinese: '在外面', type: 'adv' },
-      { word: 'shout', chinese: '大喊', type: 'v' },
-      { word: 'house', chinese: '房子', type: 'n' },
-      { word: 'count', chinese: '计数', type: 'v' },
-      { word: 'sound', chinese: '声音', type: 'n' },
-      { word: 'out', chinese: '向外', type: 'adv' },
-      { word: 'loud', chinese: '大声的', type: 'adj' },
-      { word: 'mouth', chinese: '嘴巴', type: 'n' },
-      { word: 'mountain', chinese: '山', type: 'n' },
-      { word: 'country', chinese: '国家', type: 'n' },
-      { word: 'couple', chinese: '夫妻', type: 'n' },
-      { word: 'double', chinese: '两倍的', type: 'adj' },
-      { word: 'trouble', chinese: '麻烦', type: 'n' },
-      { word: 'touch', chinese: '触摸', type: 'v' },
-      { word: 'enough', chinese: '足够的', type: 'adj' },
-      { word: 'cousin', chinese: '堂兄弟姐妹', type: 'n' },
-      { word: 'wound', chinese: '伤口', type: 'n' },
-      { word: 'soup', chinese: '汤', type: 'n' },
-      { word: 'soul', chinese: '灵魂', type: 'n' },
-      { word: 'shoulder', chinese: '肩膀', type: 'n' },
-      { word: 'snow', chinese: '雪', type: 'n' },
-      { word: 'row', chinese: '排', type: 'n' },
-      { word: 'tomorrow', chinese: '明天', type: 'n' },
-      { word: 'show', chinese: '展示', type: 'v' },
-      { word: 'grow', chinese: '成长', type: 'v' },
-      { word: 'follow', chinese: '跟随', type: 'v' },
-      { word: 'borrow', chinese: '借', type: 'v' },
-      { word: 'know', chinese: '知道', type: 'v' },
-      { word: 'own', chinese: '拥有', type: 'v' },
-      { word: 'below', chinese: '在……下面', type: 'prep' },
-      { word: 'bow', chinese: '蝴蝶结', type: 'n' },
-      { word: 'elbow', chinese: '肘部', type: 'n' },
-      { word: 'low', chinese: '低的', type: 'adj' },
-      { word: 'how', chinese: '怎样', type: 'adv' },
-      { word: 'town', chinese: '城镇', type: 'n' },
-      { word: 'now', chinese: '现在', type: 'adv' },
-      { word: 'tower', chinese: '塔', type: 'n' },
-      { word: 'argue', chinese: '争吵', type: 'v' },
-      { word: 'cue', chinese: '提示', type: 'n' },
-      { word: 'value', chinese: '价值', type: 'n' },
-      { word: 'continue', chinese: '继续', type: 'v' },
-      { word: 'sue', chinese: '控告', type: 'v' },
-      { word: 'flue', chinese: '烟道', type: 'n' },
-      { word: 'clue', chinese: '线索', type: 'n' },
-      { word: 'suit', chinese: '西装', type: 'n' },
-      { word: 'juicy', chinese: '多汁的', type: 'adj' },
-      { word: 'fruit', chinese: '水果', type: 'n' },
-      { word: 'guitar', chinese: '吉他', type: 'n' },
-      { word: 'biscuit', chinese: '饼干', type: 'n' },
-      { word: 'build', chinese: '建造', type: 'v' },
-      { word: 'guilt', chinese: '内疚', type: 'n' },
-      { word: 'party', chinese: '聚会', type: 'n' },
-      { word: 'park', chinese: '公园', type: 'n' },
-      { word: 'card', chinese: '卡片', type: 'n' },
-      { word: 'art', chinese: '艺术', type: 'n' },
-      { word: 'car', chinese: '小汽车', type: 'n' },
-      { word: 'far', chinese: '遥远的', type: 'adj' },
-      { word: 'arm', chinese: '手臂', type: 'n' },
-      { word: 'farm', chinese: '农场', type: 'n' },
-      { word: 'hard', chinese: '艰难的', type: 'adj' },
-      { word: 'market', chinese: '市场', type: 'n' },
-      { word: 'warm', chinese: '温暖的', type: 'adj' },
-      { word: 'war', chinese: '战争', type: 'n' },
-      { word: 'warn', chinese: '警告', type: 'v' },
-      { word: 'reward', chinese: '奖励', type: 'n' },
-      { word: 'dollar', chinese: '美元', type: 'n' },
-      { word: 'polar', chinese: '极地的', type: 'adj' },
-      { word: 'beggar', chinese: '乞丐', type: 'n' },
-      { word: 'person', chinese: '人', type: 'n' },
-      { word: 'term', chinese: '学期', type: 'n' },
-      { word: 'serve', chinese: '服务', type: 'v' },
-      { word: 'perfect', chinese: '完美的', type: 'adj' },
-      { word: 'better', chinese: '更好的', type: 'adj' },
-      { word: 'taller', chinese: '更高的', type: 'adj' },
-      { word: 'summer', chinese: '夏天', type: 'n' },
-      { word: 'danger', chinese: '危险', type: 'n' },
-      { word: 'september', chinese: '9月', type: 'n' },
-      { word: 'short', chinese: '短的', type: 'adj' },
-      { word: 'born', chinese: '天生的', type: 'adj' },
-      { word: 'north', chinese: '北方', type: 'n' },
-      { word: 'report', chinese: '报告', type: 'n' },
-      { word: 'corn', chinese: '玉米', type: 'n' },
-      { word: 'pork', chinese: '猪肉', type: 'n' },
-      { word: 'work', chinese: '工作', type: 'v' },
-      { word: 'worm', chinese: '蠕虫', type: 'n' },
-      { word: 'worker', chinese: '工人', type: 'n' },
-      { word: 'world', chinese: '世界', type: 'n' },
-      { word: 'worth', chinese: '值……的', type: 'adj' },
-      { word: 'worse', chinese: '更坏的', type: 'adj' },
-      { word: 'homework', chinese: '家庭作业', type: 'n' },
-      { word: 'visitor', chinese: '游客', type: 'n' },
-      { word: 'actor', chinese: '演员', type: 'n' },
-      { word: 'doctor', chinese: '医生', type: 'n' },
-      { word: 'color', chinese: '颜色', type: 'n' },
-      { word: 'first', chinese: '第一', type: 'num' },
-      { word: 'dirty', chinese: '脏的', type: 'adj' },
-      { word: 'sir', chinese: '先生', type: 'n' },
-      { word: 'shirt', chinese: '衬衫', type: 'n' },
-      { word: 'third', chinese: '第三', type: 'num' },
-      { word: 'birth', chinese: '出生', type: 'n' },
-      { word: 'turtle', chinese: '海龟', type: 'n' },
-      { word: 'turn', chinese: '转身', type: 'v' },
-      { word: 'fur', chinese: '毛皮', type: 'n' },
-      { word: 'hurt', chinese: '伤害', type: 'v' },
-      { word: 'burn', chinese: '燃烧', type: 'v' },
-      { word: 'nurse', chinese: '护士', type: 'n' },
-      { word: 'air', chinese: '空气', type: 'n' },
-      { word: 'fair', chinese: '公平的', type: 'adj' },
-      { word: 'chair', chinese: '椅子', type: 'n' },
-      { word: 'airport', chinese: '机场', type: 'n' },
-      { word: 'hair', chinese: '头发', type: 'n' },
-      { word: 'pair', chinese: '一对', type: 'n' },
-      { word: 'hare', chinese: '野兔', type: 'n' },
-      { word: 'care', chinese: '关心', type: 'v' },
-      { word: 'share', chinese: '分享', type: 'v' },
-      { word: 'prepare', chinese: '准备', type: 'v' },
-      { word: 'sphere', chinese: '球体', type: 'n' },
-      { word: 'here', chinese: '这里', type: 'adv' },
-      { word: 'mere', chinese: '仅仅', type: 'adj' },
-      { word: 'sincere', chinese: '真挚的', type: 'adj' },
-      { word: 'where', chinese: '哪里', type: 'adv' },
-      { word: 'there', chinese: '在那里', type: 'adv' },
-      { word: 'anywhere', chinese: '在任何地方', type: 'adv' },
-      { word: 'everywhere', chinese: '到处', type: 'adv' },
-      { word: 'ear', chinese: '耳朵', type: 'n' },
-      { word: 'near', chinese: '在……附近', type: 'prep' },
-      { word: 'dear', chinese: '亲爱的', type: 'adj' },
-      { word: 'fear', chinese: '害怕', type: 'v' },
-      { word: 'hear', chinese: '听见', type: 'v' },
-      { word: 'appear', chinese: '出现', type: 'v' },
-      { word: 'clear', chinese: '清楚的', type: 'adj' },
-      { word: 'wear', chinese: '穿', type: 'v' },
-      { word: 'pear', chinese: '梨', type: 'n' },
-      { word: 'swear', chinese: '发誓', type: 'v' },
-      { word: 'earth', chinese: '地球', type: 'n' },
-      { word: 'earn', chinese: '赚得', type: 'v' },
-      { word: 'peer', chinese: '同龄人', type: 'n' },
-      { word: 'beer', chinese: '啤酒', type: 'n' },
-      { word: 'deer', chinese: '鹿', type: 'n' },
-      { word: 'cheer', chinese: '欢呼', type: 'v' },
-      { word: 'fire', chinese: '火', type: 'n' },
-      { word: 'hire', chinese: '聘用', type: 'v' },
-      { word: 'admire', chinese: '钦佩', type: 'v' },
-      { word: 'bored', chinese: '无聊的', type: 'adj' },
-      { word: 'sore', chinese: '酸痛的', type: 'adj' },
-      { word: 'more', chinese: '更多的', type: 'adj' },
-      { word: 'store', chinese: '商店', type: 'n' },
-      { word: 'bookstore', chinese: '书店', type: 'n' },
-      { word: 'core', chinese: '核心', type: 'n' },
-      { word: 'chore', chinese: '家务', type: 'n' },
-      { word: 'forehead', chinese: '额头', type: 'n' },
-      { word: 'your', chinese: '你的', type: 'pron' },
-      { word: 'pour', chinese: '倒出', type: 'v' },
-      { word: 'course', chinese: '课程', type: 'n' },
-      { word: 'our', chinese: '我们的', type: 'pron' },
-      { word: 'flour', chinese: '面粉', type: 'n' },
-      { word: 'sour', chinese: '酸的', type: 'adj' },
-      { word: 'tour', chinese: '旅行', type: 'n' },
-      { word: 'detour', chinese: '绕道', type: 'v' },
-      { word: 'dour', chinese: '阴沉的', type: 'adj' },
-      { word: 'should', chinese: '应该', type: 'modal v' },
-      { word: 'shark', chinese: '鲨鱼', type: 'n' },
-      { word: 'shine', chinese: '发光', type: 'v' },
-      { word: 'sheep', chinese: '绵羊', type: 'n' },
-      { word: 'shadow', chinese: '影子', type: 'n' },
-      { word: 'shall', chinese: '将要', type: 'modal v' },
-      { word: 'shocked', chinese: '震惊的', type: 'adj' },
-      { word: 'dolphin', chinese: '海豚', type: 'n' },
-      { word: 'phone', chinese: '电话', type: 'n' },
-      { word: 'photo', chinese: '照片', type: 'n' },
-      { word: 'warmth', chinese: '温暖', type: 'n' },
-      { word: 'fourth', chinese: '第四', type: 'num' },
-      { word: 'thing', chinese: '事情', type: 'n' },
-      { word: 'month', chinese: '月份', type: 'n' },
-      { word: 'thirsty', chinese: '口渴的', type: 'adj' },
-      { word: 'math', chinese: '数学', type: 'n' },
-      { word: 'thousand', chinese: '数字1000', type: 'num' },
-      { word: 'either', chinese: '也', type: 'adv' },
-      { word: 'with', chinese: '和', type: 'prep' },
-      { word: 'them', chinese: '他们', type: 'pron' },
-      { word: 'their', chinese: '他们的', type: 'pron' },
-      { word: 'other', chinese: '其他的', type: 'pron' },
-      { word: 'this', chinese: '这个', type: 'pron' },
-      { word: 'that', chinese: '那个', type: 'pron' },
-      { word: 'wheel', chinese: '车轮', type: 'n' },
-      { word: 'white', chinese: '白色的', type: 'adj' },
-      { word: 'while', chinese: '当……的时候', type: 'conj' },
-      { word: 'which', chinese: '哪一个', type: 'pron' },
-      { word: 'whom', chinese: '谁', type: 'pron' },
-      { word: 'who', chinese: '谁', type: 'pron' },
-      { word: 'whole', chinese: '全部的', type: 'adj' },
-      { word: 'whose', chinese: '谁的', type: 'pron' },
-      { word: 'sandwich', chinese: '三明治', type: 'n' },
-      { word: 'coach', chinese: '教练', type: 'n' },
-      { word: 'lunch', chinese: '午餐', type: 'n' },
-      { word: 'chart', chinese: '图表', type: 'n' },
-      { word: 'march', chinese: '3月', type: 'n' },
-      { word: 'chocolate', chinese: '巧克力', type: 'n' },
-      { word: 'character', chinese: '人物', type: 'n' },
-      { word: 'anchor', chinese: '锚', type: 'n' },
-      { word: 'stomach', chinese: '胃', type: 'n' },
-      { word: 'christmas', chinese: '圣诞节', type: 'n' },
-      { word: 'chef', chinese: '主厨', type: 'n' },
-      { word: 'champagne', chinese: '香槟酒', type: 'n' },
-      { word: 'machine', chinese: '机器', type: 'n' },
-      { word: 'moustache', chinese: '小胡子', type: 'n' },
-      { word: 'tough', chinese: '艰难的', type: 'adj' },
-      { word: 'cough', chinese: '咳嗽', type: 'v' },
-      { word: 'laugh', chinese: '大笑', type: 'v' },
-      { word: 'eight', chinese: '数字8', type: 'n' },
-      { word: 'caught', chinese: '抓住', type: 'v' },
-      { word: 'brought', chinese: '带来', type: 'v' },
-      { word: 'bought', chinese: '买', type: 'v' },
-      { word: 'thought', chinese: '想', type: 'v' },
-      { word: 'meets', chinese: '遇见', type: 'v' },
-      { word: 'pants', chinese: '长裤', type: 'n' },
-      { word: 'gifts', chinese: '礼物', type: 'n' },
-      { word: 'cats', chinese: '猫', type: 'n' },
-      { word: 'gets', chinese: '获得', type: 'v' },
-      { word: 'boats', chinese: '小船', type: 'n' },
-      { word: 'goats', chinese: '山羊', type: 'n' },
-      { word: 'shorts', chinese: '短裤', type: 'n' },
-      { word: 'reads', chinese: '阅读', type: 'v' },
-      { word: 'needs', chinese: '需要', type: 'v' },
-      { word: 'beds', chinese: '床', type: 'n' },
-      { word: 'birds', chinese: '鸟', type: 'n' },
-      { word: 'heads', chinese: '头', type: 'n' },
-      { word: 'hands', chinese: '手', type: 'n' },
-      { word: 'cards', chinese: '卡片', type: 'n' },
-      { word: 'woods', chinese: '树林', type: 'n' },
-      { word: 'finds', chinese: '找到', type: 'v' },
-      { word: 'friends', chinese: '朋友', type: 'n' },
-      { word: 'stands', chinese: '站立', type: 'v' },
-      { word: 'bands', chinese: '乐队', type: 'n' },
-      { word: 'feeds', chinese: '喂食', type: 'v' },
-      { word: 'quickly', chinese: '快速地', type: 'adv' },
-      { word: 'pocket', chinese: '口袋', type: 'n' },
-      { word: 'lucky', chinese: '幸运的', type: 'adj' },
-      { word: 'chopsticks', chinese: '筷子', type: 'n' },
-      { word: 'ink', chinese: '墨水', type: 'n' },
-      { word: 'sink', chinese: '下沉', type: 'v' },
-      { word: 'bank', chinese: '银行', type: 'n' },
-      { word: 'pink', chinese: '粉红色', type: 'n' },
-      { word: 'long', chinese: '长的', type: 'adj' },
-      { word: 'king', chinese: '国王', type: 'n' },
-      { word: 'ring', chinese: '戒指', type: 'n' },
-      { word: 'sing', chinese: '唱歌', type: 'v' },
-      { word: 'song', chinese: '歌曲', type: 'n' },
-      { word: 'among', chinese: '在……之中', type: 'prep' },
-      { word: 'knee', chinese: '膝盖', type: 'n' },
-      { word: 'knife', chinese: '刀', type: 'n' },
-      { word: 'knight', chinese: '骑士', type: 'n' },
-      { word: 'kneel', chinese: '跪下', type: 'v' },
-      { word: 'knot', chinese: '结', type: 'n' },
-      { word: 'knob', chinese: '门把手', type: 'n' },
-      { word: 'knack', chinese: '本领', type: 'n' },
-      { word: 'knowledge', chinese: '知识', type: 'n' },
-      { word: 'comb', chinese: '梳子', type: 'n' },
-      { word: 'thumb', chinese: '拇指', type: 'n' },
-      { word: 'bomb', chinese: '炸弹', type: 'n' },
-      { word: 'limb', chinese: '肢体', type: 'n' },
-      { word: 'dumb', chinese: '哑的', type: 'adj' },
-      { word: 'tomb', chinese: '坟墓', type: 'n' },
-      { word: 'numb', chinese: '麻木的', type: 'adj' },
-      { word: 'crumb', chinese: '面包屑', type: 'n' },
-      { word: 'wrong', chinese: '错误的', type: 'adj' },
-      { word: 'wrinkle', chinese: '皱纹', type: 'n' },
-      { word: 'write', chinese: '写', type: 'v' },
-      { word: 'writer', chinese: '作者', type: 'n' },
-      { word: 'wrist', chinese: '手腕', type: 'n' },
-      { word: 'wrestle', chinese: '摔跤', type: 'v' },
-      { word: 'wreck', chinese: '沉船', type: 'n' },
-      { word: 'wreath', chinese: '花环', type: 'n' },
-      { word: 'wriggle', chinese: '扭动', type: 'v' },
-      { word: 'shrink', chinese: '缩小', type: 'v' },
-      { word: 'shrug', chinese: '耸肩', type: 'v' },
-      { word: 'shrub', chinese: '灌木', type: 'n' },
-      { word: 'shrimp', chinese: '虾', type: 'n' },
-      { word: 'scheme', chinese: '计划', type: 'n' },
-      { word: 'scholar', chinese: '学者', type: 'n' },
-      { word: 'scholarship', chinese: '奖学金', type: 'n' },
-      { word: 'throat', chinese: '喉咙', type: 'n' },
-      { word: 'three', chinese: '数字3', type: 'num' },
-      { word: 'threat', chinese: '威胁', type: 'n' },
-      { word: 'throw', chinese: '扔', type: 'v' },
-      { word: 'throne', chinese: '王位', type: 'n' },
-      { word: 'thread', chinese: '线', type: 'n' },
-      { word: 'thrive', chinese: '兴旺', type: 'v' },
-      { word: 'through', chinese: '穿过', type: 'prep' },
-      { word: 'catch', chinese: '抓住', type: 'v' },
-      { word: 'match', chinese: '比赛', type: 'n' },
-      { word: 'kitchen', chinese: '厨房', type: 'n' },
-      { word: 'witch', chinese: '女巫', type: 'n' },
-      { word: 'pleasure', chinese: '愉快', type: 'n' },
-      { word: 'measure', chinese: '测量', type: 'v' },
-      { word: 'treasure', chinese: '宝藏', type: 'n' },
-      { word: 'leisure', chinese: '闲暇', type: 'n' },
-      { word: 'pressure', chinese: '压力', type: 'n' },
-      { word: 'sure', chinese: '确信的', type: 'adj' },
-      { word: 'insure', chinese: '投保', type: 'v' },
-      { word: 'ensure', chinese: '确保', type: 'v' },
-      { word: 'fissure', chinese: '裂缝', type: 'n' },
-      { word: 'feature', chinese: '特征', type: 'n' },
-      { word: 'future', chinese: '未来', type: 'n' },
-      { word: 'picture', chinese: '图片', type: 'n' },
-      { word: 'culture', chinese: '文化', type: 'n' },
-      { word: 'gesture', chinese: '手势', type: 'n' },
-      { word: 'creature', chinese: '生物', type: 'n' },
-      { word: 'furniture', chinese: '家具', type: 'n' },
-      { word: 'lecture', chinese: '演讲', type: 'n' },
-      { word: 'mixture', chinese: '混合物', type: 'n' },
-      { word: 'capture', chinese: '捕获', type: 'v' },
-      { word: 'posture', chinese: '姿势', type: 'n' },
-      { word: 'division', chinese: '分开', type: 'n' },
-      { word: 'decision', chinese: '决定', type: 'n' },
-      { word: 'vision', chinese: '视觉', type: 'n' },
-      { word: 'television', chinese: '电视', type: 'n' },
-      { word: 'mission', chinese: '使命', type: 'n' },
-      { word: 'tension', chinese: '紧张', type: 'n' },
-      { word: 'mansion', chinese: '大厦', type: 'n' },
-      { word: 'discussion', chinese: '讨论', type: 'n' },
-      { word: 'expression', chinese: '表达', type: 'n' },
-      { word: 'expansion', chinese: '扩张', type: 'n' },
-      { word: 'physician', chinese: '内科医生', type: 'n' },
-      { word: 'magician', chinese: '魔术师', type: 'n' },
-      { word: 'musician', chinese: '音乐家', type: 'n' },
-      { word: 'technician', chinese: '技术人员', type: 'n' },
-      { word: 'politician', chinese: '政治家', type: 'n' },
-      { word: 'electrician', chinese: '电工', type: 'n' },
-      { word: 'mention', chinese: '提到', type: 'v' },
-      { word: 'action', chinese: '动作', type: 'n' },
-      { word: 'nation', chinese: '国家', type: 'n' },
-      { word: 'fiction', chinese: '小说', type: 'n' },
-      { word: 'station', chinese: '车站', type: 'n' },
-      { word: 'attention', chinese: '注意', type: 'n' },
-      { word: 'invention', chinese: '发明', type: 'n' },
-      { word: 'location', chinese: '地点', type: 'n' },
-      { word: 'production', chinese: '生产', type: 'n' },
-      { word: 'delicious', chinese: '美味的', type: 'adj' },
-      { word: 'famous', chinese: '著名的', type: 'adj' },
-      { word: 'serious', chinese: '严肃的', type: 'adj' },
-      { word: 'dangerous', chinese: '危险的', type: 'adj' },
-      { word: 'precious', chinese: '珍贵的', type: 'adj' },
-      { word: 'numerous', chinese: '大量的', type: 'adj' },
-      { word: 'anxious', chinese: '焦虑的', type: 'adj' },
-      { word: 'humorous', chinese: '幽默的', type: 'adj' },
-      { word: 'envious', chinese: '嫉妒的', type: 'adj' },
-      { word: 'cautious', chinese: '谨慎的', type: 'adj' },
-      { word: 'careful', chinese: '仔细的', type: 'adj' },
-      { word: 'useful', chinese: '有用的', type: 'adj' },
-      { word: 'hopeful', chinese: '有希望的', type: 'adj' },
-      { word: 'beautiful', chinese: '美丽的', type: 'adj' },
-      { word: 'wonderful', chinese: '精彩的', type: 'adj' },
-      { word: 'successful', chinese: '成功的', type: 'adj' },
-      { word: 'helpful', chinese: '有帮助的', type: 'adj' },
-      { word: 'harmful', chinese: '有害的', type: 'adj' },
-      { word: 'colorful', chinese: '五颜六色的', type: 'adj' },
-      { word: 'thankful', chinese: '感谢的', type: 'adj' },
-      { word: 'painful', chinese: '疼痛的', type: 'adj' },
-    ]
-  },
-];
-        let state = { currentChapter: null, currentWordIndex: 0, words: [], correctCount: 0, wrongCount: 0, hintCount: 0, sessionMistakes: [], streak: 0 };
-        const STORAGE_KEY = 'xueli_spelling_progress';
-        function loadProgress() { const saved = localStorage.getItem(STORAGE_KEY); if (saved) return JSON.parse(saved); return { chapterProgress: {}, streak: 0, lastPracticeDate: null }; }
-        function saveProgress() { const data = loadProgress(); if (state.currentChapter) { if (!data.chapterProgress[state.currentChapter]) data.chapterProgress[state.currentChapter] = { learned: 0, total: 0 }; data.chapterProgress[state.currentChapter].learned = Math.max(data.chapterProgress[state.currentChapter].learned, state.correctCount); data.chapterProgress[state.currentChapter].total = state.words.length; } data.streak = state.streak; data.lastPracticeDate = new Date().toDateString(); localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-        function switchPage(pageId) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); }
-        function goHome() { switchPage('home-page'); updateHomeStats(); }
-        function updateHomeStats() { const progress = loadProgress(); let totalWords = 0, learnedWords = 0; WORDS_DATA.forEach(ch => { totalWords += ch.words.length; if (progress.chapterProgress[ch.id]) learnedWords += progress.chapterProgress[ch.id].learned || 0; }); document.getElementById('stat-total').textContent = totalWords; document.getElementById('stat-learned').textContent = learnedWords; document.getElementById('stat-streak').textContent = progress.streak; renderChapterList(); }
-        function renderChapterList() { const progress = loadProgress(); const container = document.getElementById('chapter-list'); container.innerHTML = ''; WORDS_DATA.forEach(ch => { const chProg = progress.chapterProgress[ch.id] || { learned: 0, total: ch.words.length }; const total = ch.words.length, learned = chProg.learned; const btn = document.createElement('button'); btn.className = 'chapter-btn'; btn.innerHTML = '<div class="ch-icon">' + ch.icon + '</div><div class="ch-title">' + ch.title + '</div><div class="ch-progress">' + learned + '/' + total + ' 已掌握</div>'; btn.onclick = () => startChapter(ch.id); container.appendChild(btn); }); }
-        function startChapter(chapterId) { const chapter = WORDS_DATA.find(c => c.id === chapterId); if (!chapter) return; state.currentChapter = chapterId; state.currentWordIndex = 0; state.correctCount = 0; state.wrongCount = 0; state.hintCount = 0; state.sessionMistakes = []; state.words = [...chapter.words].sort(() => Math.random() - 0.5); switchPage('practice-page'); renderCurrentWord(); updateProgress(); }
-        function renderCurrentWord() { const word = state.words[state.currentWordIndex]; if (!word) return completeChapter(); document.getElementById('word-chinese').textContent = word.chinese; document.getElementById('word-type').textContent = word.type; const feedback = document.getElementById('feedback'); feedback.className = 'feedback'; feedback.textContent = ''; const container = document.getElementById('letter-inputs'); container.innerHTML = ''; for (let i = 0; i < word.word.length; i++) { const input = document.createElement('input'); input.type = 'text'; input.maxLength = 1; input.className = 'letter-input'; input.dataset.index = i; input.autocomplete = 'off'; input.addEventListener('input', handleLetterInput); input.addEventListener('keydown', handleKeydown); container.appendChild(input); } setTimeout(() => container.querySelector('.letter-input')?.focus(), 100); document.getElementById('keyboard-hint').textContent = ''; }
-        function handleLetterInput(e) { const input = e.target; input.value = input.value.toLowerCase(); if (input.value) { const nextIndex = parseInt(input.dataset.index) + 1; const nextInput = document.querySelector('.letter-input[data-index="' + nextIndex + '"]'); if (nextInput) nextInput.focus(); } }
-        function handleKeydown(e) { if (e.key === 'Backspace' && !e.target.value) { const prevIndex = parseInt(e.target.dataset.index) - 1; const prevInput = document.querySelector('.letter-input[data-index="' + prevIndex + '"]'); if (prevInput) prevInput.focus(); } else if (e.key === 'Enter') checkAnswer(); }
-        function showHint() { const word = state.words[state.currentWordIndex]; const inputs = document.querySelectorAll('.letter-input'); let hintIndex = -1; for (let i = 0; i < inputs.length; i++) { if (!inputs[i].value || inputs[i].value.toLowerCase() !== word.word[i]) { hintIndex = i; break; } } if (hintIndex >= 0) { inputs[hintIndex].value = word.word[hintIndex]; inputs[hintIndex].classList.add('hint'); state.hintCount++; const feedback = document.getElementById('feedback'); feedback.className = 'feedback hint show'; feedback.textContent = '💡 提示：第 ' + (hintIndex + 1) + ' 个字母是 "' + word.word[hintIndex] + '"'; } }
-        function checkAnswer() { const word = state.words[state.currentWordIndex]; const inputs = document.querySelectorAll('.letter-input'); let userAnswer = ''; inputs.forEach(input => { userAnswer += input.value.toLowerCase(); }); if (userAnswer.length < word.word.length) { showToast('请输入完整的单词！'); return; } const feedback = document.getElementById('feedback'); feedback.className = 'feedback show'; if (userAnswer === word.word) { state.correctCount++; inputs.forEach(input => input.classList.add('correct')); feedback.classList.add('success'); feedback.textContent = '🎉 太棒了！完全正确！'; showStars(); setTimeout(() => { state.currentWordIndex++; updateProgress(); renderCurrentWord(); }, 1200); } else { state.wrongCount++; state.sessionMistakes.push(word); inputs.forEach((input, i) => { if (input.value.toLowerCase() !== word.word[i]) input.classList.add('incorrect'); }); feedback.classList.add('error'); feedback.textContent = '❌ 再试一次！'; setTimeout(() => { inputs.forEach(input => { input.classList.remove('incorrect'); input.value = ''; }); inputs[0]?.focus(); feedback.className = 'feedback'; }, 1000); } }
-        function updateProgress() { const total = state.words.length; const current = state.currentWordIndex; const percent = total > 0 ? (current / total) * 100 : 0; const circle = document.getElementById('progress-circle'); const circumference = 2 * Math.PI * 20; circle.style.strokeDashoffset = circumference - (percent / 100) * circumference; document.getElementById('progress-text').textContent = current + '/' + total; }
-        function completeChapter() { const progress = loadProgress(); const today = new Date().toDateString(); if (progress.lastPracticeDate !== today) { progress.streak = (progress.lastPracticeDate === new Date(Date.now() - 86400000).toDateString()) ? progress.streak + 1 : 1; } state.streak = progress.streak; saveProgress(); document.getElementById('complete-correct').textContent = state.correctCount; document.getElementById('complete-wrong').textContent = state.wrongCount; document.getElementById('complete-hints').textContent = state.hintCount; switchPage('complete-page'); }
-        function reviewMistakes() { if (state.sessionMistakes.length > 0) { state.words = [...state.sessionMistakes].sort(() => Math.random() - 0.5); state.currentWordIndex = 0; state.correctCount = 0; state.wrongCount = 0; state.hintCount = 0; state.sessionMistakes = []; switchPage('practice-page'); renderCurrentWord(); updateProgress(); } else { showToast('没有错题可以复习！'); } }
-        function showStars() { const stars = document.getElementById('stars'); stars.classList.add('show'); stars.innerHTML = ''; const emojis = ['⭐', '🌟', '✨', '💫', '🎉']; for (let i = 0; i < 8; i++) { const star = document.createElement('div'); star.className = 'star'; star.textContent = emojis[Math.floor(Math.random() * emojis.length)]; star.style.left = Math.random() * 100 + '%'; star.style.top = Math.random() * 50 + 30 + '%'; star.style.animationDelay = Math.random() * 0.3 + 's'; stars.appendChild(star); } setTimeout(() => stars.classList.remove('show'), 1500); }
-        function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
-        function switchTab(tab) { if (tab === 'home') { switchPage('home-page'); updateHomeStats(); } }
-        document.addEventListener('DOMContentLoaded', updateHomeStats);
-    </script>
+            <div id="word-list-container"></div>
+        </div>
+    </main>
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home',this)"><span class="nav-item-icon">&#127968;</span><span>首页</span></button>
+        <button class="nav-item" onclick="switchTab('progress',this)"><span class="nav-item-icon">&#128202;</span><span>进度</span></button>
+    </nav>
+</div>
+<div class="stars" id="stars"></div>
+<div class="toast" id="toast"></div>
+<script>
+const CHAPTERS = 
+[{"id":"ch_Aa_æ","parentLabel":"元音字母","title":"Aa [æ]","icon":"🍎","words":[{"word":"animal","chinese":"动物"},{"word":"apple","chinese":"苹果"},{"word":"and","chinese":"和"},{"word":"at","chinese":"在"},{"word":"ant","chinese":"蚂蚁"},{"word":"pan","chinese":"平底锅"},{"word":"am","chinese":"是(be的第一人称单数现在时)"},{"word":"back","chinese":"背部"}]},{"id":"ch_Aa_eɪ","parentLabel":"元音字母","title":"Aa [eɪ]","icon":"🍎","words":[{"word":"baby","chinese":"婴儿"},{"word":"crazy","chinese":"疯狂的"},{"word":"nature","chinese":"大自然"},{"word":"lady","chinese":"女士"},{"word":"late","chinese":"迟到的"},{"word":"table","chinese":"桌子"},{"word":"lazy","chinese":"懒惰的"},{"word":"radio","chinese":"收音机"}]},{"id":"ch_Aa_ə","parentLabel":"元音字母","title":"Aa [ə]","icon":"🍎","words":[{"word":"above","chinese":"在……上面"},{"word":"china","chinese":"中国"},{"word":"apart","chinese":"分离"},{"word":"sofa","chinese":"沙发"},{"word":"about","chinese":"关于"},{"word":"library","chinese":"图书馆"},{"word":"panda","chinese":"熊猫"},{"word":"amazing","chinese":"令人惊异的"}]},{"id":"ch_Aa_ɑː","parentLabel":"元音字母","title":"Aa [ɑː]","icon":"🍎","words":[{"word":"after","chinese":"在……之后"},{"word":"dance","chinese":"跳舞"},{"word":"plant","chinese":"植物"},{"word":"bath","chinese":"洗澡"},{"word":"pass","chinese":"通过"},{"word":"fast","chinese":"快的"},{"word":"ask","chinese":"询问"},{"word":"glass","chinese":"玻璃杯"},{"word":"graph","chinese":"图表"},{"word":"last","chinese":"最近，上一次"}]},{"id":"ch_Aa_ɒ","parentLabel":"元音字母","title":"Aa [ɒ]","icon":"🍎","words":[{"word":"want","chinese":"想要"},{"word":"what","chinese":"什么"},{"word":"wash","chinese":"洗"},{"word":"watch","chinese":"手表"},{"word":"was","chinese":"是(am、is的过去式)"},{"word":"wallet","chinese":"钱包"}]},{"id":"ch_Aa_ɔː","parentLabel":"元音字母","title":"Aa [ɔː]","icon":"🍎","words":[{"word":"salt","chinese":"盐"},{"word":"already","chinese":"已经"},{"word":"water","chinese":"水"},{"word":"false","chinese":"错误的"},{"word":"always","chinese":"总是"},{"word":"also","chinese":"也"}]},{"id":"ch_Ee_e","parentLabel":"元音字母","title":"Ee [e]","icon":"🐘","words":[{"word":"leg","chinese":"腿"},{"word":"bed","chinese":"床"},{"word":"ten","chinese":"数字10"},{"word":"egg","chinese":"蛋"},{"word":"end","chinese":"结束"},{"word":"pet","chinese":"宠物"},{"word":"pen","chinese":"钢笔"},{"word":"elephant","chinese":"大象"}]},{"id":"ch_Ee_iː","parentLabel":"元音字母","title":"Ee [iː]","icon":"🐘","words":[{"word":"be","chinese":"是"},{"word":"meter","chinese":"米"},{"word":"me","chinese":"我(宾格)"},{"word":"we","chinese":"我们"},{"word":"he","chinese":"他"},{"word":"she","chinese":"她"},{"word":"museum","chinese":"博物馆"},{"word":"email","chinese":"电子邮件"}]},{"id":"ch_Ee_ɪ","parentLabel":"元音字母","title":"Ee [ɪ]","icon":"🐘","words":[{"word":"forest","chinese":"森林"},{"word":"behind","chinese":"在……后面"},{"word":"eraser","chinese":"橡皮擦"},{"word":"pretty","chinese":"美丽的"},{"word":"chicken","chinese":"鸡肉"},{"word":"before","chinese":"在……之前"},{"word":"basket","chinese":"篮子"},{"word":"rocket","chinese":"火箭"},{"word":"ticket","chinese":"票"},{"word":"jacket","chinese":"夹克衫"}]},{"id":"ch_Ee_ə","parentLabel":"元音字母","title":"Ee [ə]","icon":"🐘","words":[{"word":"hundred","chinese":"一百"},{"word":"parent","chinese":"父(母)亲"},{"word":"broken","chinese":"破碎的"},{"word":"often","chinese":"时常"},{"word":"open","chinese":"打开"},{"word":"problem","chinese":"问题"},{"word":"cinema","chinese":"电影院"},{"word":"children","chinese":"孩子们"}]},{"id":"ch_Ee_不发音","parentLabel":"元音字母","title":"Ee 不发音","icon":"🐘","words":[{"word":"minute","chinese":"分钟"},{"word":"juice","chinese":"果汁"},{"word":"police","chinese":"警察"},{"word":"mouse","chinese":"老鼠"},{"word":"horse","chinese":"马"},{"word":"noise","chinese":"噪音"},{"word":"leave","chinese":"离开"},{"word":"office","chinese":"办公室"}]},{"id":"ch_Ii_ɪ","parentLabel":"元音字母","title":"Ii [ɪ]","icon":"🦋","words":[{"word":"in","chinese":"在……里面"},{"word":"his","chinese":"他的"},{"word":"ill","chinese":"生病的"},{"word":"sit","chinese":"坐下"},{"word":"if","chinese":"如果"},{"word":"pig","chinese":"猪"},{"word":"insect","chinese":"昆虫"},{"word":"him","chinese":"他(宾格)"}]},{"id":"ch_Ii_aɪ","parentLabel":"元音字母","title":"Ii [aɪ]","icon":"🦋","words":[{"word":"sign","chinese":"标志"},{"word":"tiger","chinese":"老虎"},{"word":"kind","chinese":"善良的"},{"word":"wild","chinese":"野生的"},{"word":"find","chinese":"找到"},{"word":"child","chinese":"儿童"},{"word":"tiny","chinese":"极小的"},{"word":"bicycle","chinese":"自行车"}]},{"id":"ch_Ii_ə","parentLabel":"元音字母","title":"Ii [ə]","icon":"🦋","words":[{"word":"terrible","chinese":"糟糕的"},{"word":"family","chinese":"家庭"},{"word":"april","chinese":"4月"},{"word":"holiday","chinese":"假期"}]},{"id":"ch_Oo_ɒ","parentLabel":"元音字母","title":"Oo [ɒ]","icon":"🐙","words":[{"word":"on","chinese":"在……上面"},{"word":"lot","chinese":"许多"},{"word":"body","chinese":"身体"},{"word":"top","chinese":"顶部"},{"word":"fox","chinese":"狐狸"},{"word":"hop","chinese":"单腿跳"},{"word":"not","chinese":"不"},{"word":"sorry","chinese":"抱歉的"}]},{"id":"ch_Oo_əʊ","parentLabel":"元音字母","title":"Oo [əʊ]","icon":"🐙","words":[{"word":"post","chinese":"邮递"},{"word":"potato","chinese":"马铃薯"},{"word":"cold","chinese":"冷的"},{"word":"go","chinese":"去"},{"word":"old","chinese":"年老的"},{"word":"both","chinese":"两者"},{"word":"so","chinese":"所以"},{"word":"no","chinese":"不"},{"word":"tomato","chinese":"西红柿"},{"word":"piano","chinese":"钢琴"}]},{"id":"ch_Oo_ə","parentLabel":"元音字母","title":"Oo [ə]","icon":"🐙","words":[{"word":"tonight","chinese":"今晚"},{"word":"polite","chinese":"有礼貌的"},{"word":"today","chinese":"今天"},{"word":"lesson","chinese":"课程"},{"word":"carrot","chinese":"胡萝卜"},{"word":"together","chinese":"在一起"}]},{"id":"ch_Oo_ʌ","parentLabel":"元音字母","title":"Oo [ʌ]","icon":"🐙","words":[{"word":"come","chinese":"来"},{"word":"monkey","chinese":"猴子"},{"word":"mother","chinese":"母亲"},{"word":"some","chinese":"一些"},{"word":"love","chinese":"爱，喜爱"},{"word":"onion","chinese":"洋葱"},{"word":"money","chinese":"钱"},{"word":"monday","chinese":"星期一"}]},{"id":"ch_Uu_ʌ","parentLabel":"元音字母","title":"Uu [ʌ]","icon":"☂️","words":[{"word":"under","chinese":"在……下面"},{"word":"hug","chinese":"拥抱"},{"word":"sun","chinese":"太阳"},{"word":"cut","chinese":"剪切"},{"word":"ugly","chinese":"丑陋的"},{"word":"umbrella","chinese":"雨伞"},{"word":"run","chinese":"跑"},{"word":"bus","chinese":"公交车"},{"word":"uncle","chinese":"叔叔"}]},{"id":"ch_Uu_ʊ","parentLabel":"元音字母","title":"Uu [ʊ]","icon":"☂️","words":[{"word":"bush","chinese":"灌木"},{"word":"put","chinese":"放置"},{"word":"pull","chinese":"拉"},{"word":"push","chinese":"推"},{"word":"full","chinese":"满的"},{"word":"sugar","chinese":"糖"}]},{"id":"ch_Uu_juː","parentLabel":"元音字母","title":"Uu [juː]","icon":"☂️","words":[{"word":"usually","chinese":"通常"},{"word":"pupil","chinese":"小学生"},{"word":"duty","chinese":"责任"},{"word":"human","chinese":"人类"},{"word":"music","chinese":"音乐"},{"word":"student","chinese":"学生"}]},{"id":"ch_Uu_uː","parentLabel":"元音字母","title":"Uu [uː]","icon":"☂️","words":[{"word":"super","chinese":"超级的"},{"word":"rude","chinese":"粗鲁的"},{"word":"rule","chinese":"规则"},{"word":"lunar","chinese":"月亮的"},{"word":"ruler","chinese":"尺子"},{"word":"junior","chinese":"(尤用于美国)年龄较小的"}]},{"id":"ch_Uu_ə","parentLabel":"元音字母","title":"Uu [ə]","icon":"☂️","words":[{"word":"autumn","chinese":"秋天"},{"word":"upon","chinese":"在……上"},{"word":"lotus","chinese":"莲花"},{"word":"bonus","chinese":"奖金"},{"word":"album","chinese":"专辑"},{"word":"difficult","chinese":"困难的"}]},{"id":"ch_Bb_b","parentLabel":"辅音字母","title":"Bb [b]","icon":"🔤","words":[{"word":"boy","chinese":"男孩"},{"word":"buy","chinese":"买"},{"word":"bike","chinese":"自行车"},{"word":"beef","chinese":"牛肉"},{"word":"bird","chinese":"鸟"},{"word":"bear","chinese":"熊"},{"word":"bottle","chinese":"瓶子"},{"word":"banana","chinese":"香蕉"},{"word":"butterfly","chinese":"蝴蝶"},{"word":"bedroom","chinese":"卧室"}]},{"id":"ch_Cc_k","parentLabel":"辅音字母","title":"Cc [k]","icon":"🔤","words":[{"word":"clothes","chinese":"衣服"},{"word":"carry","chinese":"携带"},{"word":"collect","chinese":"收集"},{"word":"cat","chinese":"猫"},{"word":"cow","chinese":"奶牛"},{"word":"coat","chinese":"外套"},{"word":"copy","chinese":"复制"},{"word":"camera","chinese":"相机"},{"word":"capital","chinese":"首都"},{"word":"computer","chinese":"电脑"}]},{"id":"ch_Cc_s","parentLabel":"辅音字母","title":"Cc [s]","icon":"🔤","words":[{"word":"circle","chinese":"圆圈"},{"word":"ice","chinese":"冰"},{"word":"city","chinese":"城市"},{"word":"rice","chinese":"大米，米饭"},{"word":"face","chinese":"脸"},{"word":"recycle","chinese":"回收利用"}]},{"id":"ch_Dd_d","parentLabel":"辅音字母","title":"Dd [d]","icon":"🔤","words":[{"word":"door","chinese":"门"},{"word":"dinner","chinese":"晚餐"},{"word":"send","chinese":"发送"},{"word":"duck","chinese":"鸭子"},{"word":"desk","chinese":"书桌"},{"word":"word","chinese":"单词"},{"word":"dictionary","chinese":"词典"},{"word":"down","chinese":"在下方"}]},{"id":"ch_Ff_f","parentLabel":"辅音字母","title":"Ff [f]","icon":"🔤","words":[{"word":"ferry","chinese":"渡轮"},{"word":"wife","chinese":"妻子"},{"word":"fork","chinese":"叉子"},{"word":"four","chinese":"数字4"},{"word":"father","chinese":"爸爸"},{"word":"february","chinese":"二月"},{"word":"funny","chinese":"有趣的"},{"word":"film","chinese":"电影"},{"word":"family","chinese":"家庭"},{"word":"fifteen","chinese":"数字15"}]},{"id":"ch_Gg_g","parentLabel":"辅音字母","title":"Gg [g]","icon":"🔤","words":[{"word":"gift","chinese":"礼物"},{"word":"guess","chinese":"猜测"},{"word":"get","chinese":"得到"},{"word":"goal","chinese":"目标"},{"word":"girl","chinese":"女孩"},{"word":"angry","chinese":"生气的"},{"word":"goat","chinese":"山羊"},{"word":"grandmother","chinese":"(外)祖母"}]},{"id":"ch_Gg_dʒ","parentLabel":"辅音字母","title":"Gg [dʒ]","icon":"🔤","words":[{"word":"giraffe","chinese":"长颈鹿"},{"word":"gym","chinese":"健身房"},{"word":"age","chinese":"年龄"},{"word":"large","chinese":"巨大的"},{"word":"magic","chinese":"魔法"},{"word":"energy","chinese":"能量"}]},{"id":"ch_Hh_h","parentLabel":"辅音字母","title":"Hh [h]","icon":"🔤","words":[{"word":"hurry","chinese":"匆忙"},{"word":"happy","chinese":"开心的"},{"word":"her","chinese":"她(宾格)"},{"word":"hill","chinese":"小山"},{"word":"help","chinese":"帮助"},{"word":"hand","chinese":"手"},{"word":"helmet","chinese":"头盔"},{"word":"have","chinese":"有"},{"word":"hospital","chinese":"医院"},{"word":"hungry","chinese":"饥饿的"}]},{"id":"ch_Jj_dʒ","parentLabel":"辅音字母","title":"Jj [dʒ]","icon":"🔤","words":[{"word":"just","chinese":"正好；刚刚"},{"word":"jeep","chinese":"吉普车"},{"word":"enjoy","chinese":"享受"},{"word":"june","chinese":"六月"},{"word":"july","chinese":"七月"},{"word":"jump","chinese":"跳"},{"word":"japan","chinese":"日本"},{"word":"january","chinese":"一月"}]},{"id":"ch_Kk_k","parentLabel":"辅音字母","title":"Kk [k]","icon":"🔤","words":[{"word":"kitten","chinese":"小猫"},{"word":"kiss","chinese":"亲吻"},{"word":"cake","chinese":"蛋糕"},{"word":"key","chinese":"钥匙"},{"word":"kite","chinese":"风筝"},{"word":"milk","chinese":"牛奶"},{"word":"week","chinese":"星期"},{"word":"kangaroo","chinese":"袋鼠"}]},{"id":"ch_Ll_l","parentLabel":"辅音字母","title":"Ll [l]","icon":"🔤","words":[{"word":"little","chinese":"小的"},{"word":"lion","chinese":"狮子"},{"word":"live","chinese":"生活"},{"word":"left","chinese":"左边"},{"word":"lost","chinese":"迷路的"},{"word":"bowl","chinese":"碗"},{"word":"eleven","chinese":"数字11"},{"word":"building","chinese":"建筑"}]},{"id":"ch_Mm_m","parentLabel":"辅音字母","title":"Mm [m]","icon":"🔤","words":[{"word":"yum","chinese":"表示食物好吃或味道好闻"},{"word":"meal","chinese":"餐"},{"word":"mom","chinese":"妈妈"},{"word":"must","chinese":"必须"},{"word":"miss","chinese":"错过"},{"word":"mango","chinese":"芒果"},{"word":"matter","chinese":"问题"},{"word":"morning","chinese":"早晨"}]},{"id":"ch_Nn_n","parentLabel":"辅音字母","title":"Nn [n]","icon":"🔤","words":[{"word":"children","chinese":"孩子们"},{"word":"rain","chinese":"下雨"},{"word":"next","chinese":"下一个的"},{"word":"learn","chinese":"学习"},{"word":"evening","chinese":"晚上"},{"word":"nineteen","chinese":"数字19"},{"word":"son","chinese":"儿子"},{"word":"nice","chinese":"美好的"},{"word":"neck","chinese":"脖子"},{"word":"pencil","chinese":"铅笔"}]},{"id":"ch_Nn_ŋ","parentLabel":"辅音字母","title":"Nn [ŋ]","icon":"🔤","words":[{"word":"think","chinese":"思考"},{"word":"thank","chinese":"感谢"},{"word":"ankle","chinese":"脚踝"},{"word":"language","chinese":"语言"},{"word":"english","chinese":"英语"},{"word":"uncle","chinese":"叔叔"}]},{"id":"ch_Pp_p","parentLabel":"辅音字母","title":"Pp [p]","icon":"🔤","words":[{"word":"poem","chinese":"诗歌"},{"word":"picnic","chinese":"野餐"},{"word":"pilot","chinese":"飞行员"},{"word":"puppy","chinese":"小狗"},{"word":"keep","chinese":"保留"},{"word":"puzzle","chinese":"拼图"},{"word":"pizza","chinese":"比萨"},{"word":"purple","chinese":"紫色"},{"word":"policeman","chinese":"警察"},{"word":"people","chinese":"人们"}]},{"id":"ch_Qq_qu__kw","parentLabel":"其他","title":"Qq(qu) [kw]","icon":"📖","words":[{"word":"quarter","chinese":"四分之一"},{"word":"quiet","chinese":"安静的"},{"word":"quick","chinese":"快的"},{"word":"quit","chinese":"离开"},{"word":"quilt","chinese":"被子"},{"word":"quite","chinese":"相当"},{"word":"queen","chinese":"女王"},{"word":"question","chinese":"问题"}]},{"id":"ch_Rr_r","parentLabel":"辅音字母","title":"Rr [r]","icon":"🔤","words":[{"word":"rise","chinese":"上升"},{"word":"round","chinese":"圆的"},{"word":"river","chinese":"河流"},{"word":"rest","chinese":"休息"},{"word":"rich","chinese":"富裕的"},{"word":"robot","chinese":"机器人"},{"word":"really","chinese":"真正地"},{"word":"rabbit","chinese":"兔子"}]},{"id":"ch_Ss_s","parentLabel":"辅音字母","title":"Ss [s]","icon":"🔤","words":[{"word":"stops","chinese":"停止(stop的三单形式)"},{"word":"salad","chinese":"沙拉"},{"word":"seven","chinese":"数字7"},{"word":"sale","chinese":"出售"},{"word":"test","chinese":"测验"},{"word":"sunny","chinese":"晴朗的"},{"word":"sister","chinese":"姐妹"},{"word":"supermarket","chinese":"超市"}]},{"id":"ch_Ss_z","parentLabel":"辅音字母","title":"Ss [z]","icon":"🔤","words":[{"word":"trousers","chinese":"裤子"},{"word":"desert","chinese":"沙漠"},{"word":"observe","chinese":"观察"},{"word":"use","chinese":"使用"},{"word":"lose","chinese":"丢失"},{"word":"rose","chinese":"玫瑰"},{"word":"rulers","chinese":"尺子(ruler的复数)"},{"word":"because","chinese":"因为"},{"word":"tuesday","chinese":"星期二"},{"word":"thursday","chinese":"星期四"}]},{"id":"ch_Tt_t","parentLabel":"辅音字母","title":"Tt [t]","icon":"🔤","words":[{"word":"sixteen","chinese":"数字16"},{"word":"taxi","chinese":"出租车"},{"word":"aunt","chinese":"阿姨"},{"word":"two","chinese":"数字2"},{"word":"type","chinese":"类型"},{"word":"went","chinese":"去(go的过去式)"},{"word":"list","chinese":"清单"},{"word":"tired","chinese":"疲劳的"}]},{"id":"ch_Vv_v","parentLabel":"辅音字母","title":"Vv [v]","icon":"🔤","words":[{"word":"heavy","chinese":"重的"},{"word":"favorite","chinese":"最喜爱的"},{"word":"above","chinese":"在……上面"},{"word":"very","chinese":"非常"},{"word":"visit","chinese":"参观"},{"word":"view","chinese":"视野"},{"word":"video","chinese":"视频"},{"word":"valley","chinese":"山谷"},{"word":"twelve","chinese":"数字12"},{"word":"vegetable","chinese":"蔬菜"}]},{"id":"ch_Ww_w","parentLabel":"辅音字母","title":"Ww [w]","icon":"🔤","words":[{"word":"worry","chinese":"担心"},{"word":"window","chinese":"窗户"},{"word":"windy","chinese":"多风的"},{"word":"wide","chinese":"宽的"},{"word":"winter","chinese":"冬天"},{"word":"wine","chinese":"酒"},{"word":"woman","chinese":"女人"},{"word":"watermelon","chinese":"西瓜"}]},{"id":"ch_Xx_ks","parentLabel":"辅音字母","title":"Xx [ks]","icon":"🔤","words":[{"word":"excuse","chinese":"借口"},{"word":"exercise","chinese":"锻炼"},{"word":"expect","chinese":"期待"},{"word":"text","chinese":"课文；课本"},{"word":"relax","chinese":"放松"},{"word":"express","chinese":"表达"},{"word":"expensive","chinese":"昂贵的"},{"word":"excited","chinese":"激动的"}]},{"id":"ch_Xx_gz","parentLabel":"辅音字母","title":"Xx [gz]","icon":"🔤","words":[{"word":"exact","chinese":"确切的"},{"word":"exam","chinese":"考试"},{"word":"exist","chinese":"存在"},{"word":"example","chinese":"例子"}]},{"id":"ch_Yy_j","parentLabel":"辅音字母","title":"Yy [j]","icon":"🔤","words":[{"word":"yogurt","chinese":"酸奶"},{"word":"year","chinese":"年"},{"word":"yes","chinese":"是的"},{"word":"young","chinese":"年轻的"},{"word":"yellow","chinese":"黄色"},{"word":"yesterday","chinese":"昨天"},{"word":"yard","chinese":"院子"},{"word":"you","chinese":"你，你们"}]},{"id":"ch_Yy_i","parentLabel":"辅音字母","title":"Yy [i]","icon":"🔤","words":[{"word":"friendly","chinese":"友好的"},{"word":"candy","chinese":"糖果"},{"word":"angry","chinese":"生气的"},{"word":"rainy","chinese":"下雨的"},{"word":"early","chinese":"早的"},{"word":"hobby","chinese":"兴趣爱好"},{"word":"university","chinese":"大学"},{"word":"twenty","chinese":"数字20"}]},{"id":"ch_Yy_aɪ","parentLabel":"辅音字母","title":"Yy [aɪ]","icon":"🔤","words":[{"word":"dry","chinese":"干燥的"},{"word":"my","chinese":"我的"},{"word":"cry","chinese":"哭"},{"word":"by","chinese":"通过"},{"word":"fly","chinese":"飞"},{"word":"try","chinese":"尝试"},{"word":"shy","chinese":"害羞的"},{"word":"why","chinese":"为什么"}]},{"id":"ch_Zz_z","parentLabel":"辅音字母","title":"Zz [z]","icon":"🔤","words":[{"word":"zone","chinese":"地区"},{"word":"maze","chinese":"迷宫"},{"word":"zero","chinese":"数字0"},{"word":"size","chinese":"尺码"},{"word":"zip","chinese":"拉链"},{"word":"prize","chinese":"奖"},{"word":"zoo","chinese":"动物园"},{"word":"zebra","chinese":"斑马"},{"word":"magazine","chinese":"杂志"},{"word":"freeze","chinese":"结冰/字母组合"}]},{"id":"ch_ad_æd","parentLabel":"短元音词族","title":"ad [æd]","icon":"📖","words":[{"word":"bad","chinese":"坏的"},{"word":"glad","chinese":"高兴的"},{"word":"pad","chinese":"垫子"},{"word":"lad","chinese":"小伙子，男孩"},{"word":"dad","chinese":"爸爸"},{"word":"sad","chinese":"伤心的"},{"word":"mad","chinese":"生气的"},{"word":"had","chinese":"有(have的过去式)"}]},{"id":"ch_ag_æg","parentLabel":"短元音词族","title":"ag [æg]","icon":"📖","words":[{"word":"wag","chinese":"摇摆"},{"word":"bag","chinese":"包"},{"word":"tag","chinese":"标签"},{"word":"rag","chinese":"抹布"},{"word":"flag","chinese":"旗帜"},{"word":"drag","chinese":"拖拽"}]},{"id":"ch_am_æm","parentLabel":"短元音词族","title":"am [æm]","icon":"📖","words":[{"word":"bamboo","chinese":"竹子"},{"word":"ram","chinese":"公羊"},{"word":"dam","chinese":"水坝"},{"word":"jam","chinese":"果酱"},{"word":"ham","chinese":"火腿"},{"word":"lamp","chinese":"灯"},{"word":"camp","chinese":"营地"},{"word":"hamburger","chinese":"汉堡"}]},{"id":"ch_an_æn","parentLabel":"短元音词族","title":"an [æn]","icon":"📖","words":[{"word":"man","chinese":"男人"},{"word":"can","chinese":"能够"},{"word":"ban","chinese":"禁止"},{"word":"fan","chinese":"风扇"},{"word":"van","chinese":"面包车"},{"word":"pan","chinese":"平底锅"},{"word":"tan","chinese":"棕褐色"},{"word":"ran","chinese":"跑(run的过去式)"}]},{"id":"ch_ap_æp","parentLabel":"短元音词族","title":"ap [æp]","icon":"📖","words":[{"word":"trap","chinese":"陷阱"},{"word":"tap","chinese":"水龙头"},{"word":"lap","chinese":"大腿部"},{"word":"nap","chinese":"打盹"},{"word":"gap","chinese":"缝隙"},{"word":"clap","chinese":"鼓掌"},{"word":"map","chinese":"地图"},{"word":"cap","chinese":"鸭舌帽"}]},{"id":"ch_at_æt","parentLabel":"短元音词族","title":"at [æt]","icon":"📖","words":[{"word":"mat","chinese":"垫子"},{"word":"cat","chinese":"猫"},{"word":"hat","chinese":"帽子"},{"word":"bat","chinese":"蝙蝠"},{"word":"rat","chinese":"老鼠"},{"word":"pat","chinese":"轻拍"},{"word":"fat","chinese":"肥胖的"},{"word":"sat","chinese":"坐下(sit的过去式)"}]},{"id":"ch_ack_æk","parentLabel":"短元音词族","title":"ack [æk]","icon":"📖","words":[{"word":"snack","chinese":"点心"},{"word":"pack","chinese":"包装"},{"word":"track","chinese":"小道"},{"word":"black","chinese":"黑色的"},{"word":"crack","chinese":"使破裂"},{"word":"quack","chinese":"(鸭子的)嘎嘎叫"}]},{"id":"ch_and_ænd","parentLabel":"短元音词族","title":"and [ænd]","icon":"📖","words":[{"word":"brand","chinese":"品牌"},{"word":"band","chinese":"乐队"},{"word":"sand","chinese":"沙子"},{"word":"land","chinese":"土地"},{"word":"stand","chinese":"站立"},{"word":"understand","chinese":"理解"}]},{"id":"ch_ank_æŋk","parentLabel":"短元音词族","title":"ank [æŋk]","icon":"📖","words":[{"word":"blank","chinese":"空白的"},{"word":"tank","chinese":"箱；坦克"},{"word":"rank","chinese":"等级"},{"word":"hank","chinese":"一卷"},{"word":"frank","chinese":"坦率的"},{"word":"sank","chinese":"沉；陷(sink的过去式)"}]},{"id":"ch_ed_ed","parentLabel":"短元音词族","title":"ed [ed]","icon":"📖","words":[{"word":"wed","chinese":"结婚"},{"word":"led","chinese":"带领(lead的过去式)"},{"word":"sled","chinese":"雪橇"},{"word":"red","chinese":"红色的"},{"word":"bed","chinese":"床"},{"word":"shed","chinese":"棚屋"},{"word":"fed","chinese":"喂养(feed的过去式)"},{"word":"fled","chinese":"逃走(flee的过去分词)"}]},{"id":"ch_eg_eg","parentLabel":"短元音词族","title":"eg [eg]","icon":"📖","words":[{"word":"beg","chinese":"乞求"},{"word":"leg","chinese":"腿"},{"word":"peg","chinese":"衣夹"},{"word":"keg","chinese":"(盛啤酒的)小桶"}]},{"id":"ch_en_en","parentLabel":"短元音词族","title":"en [en]","icon":"📖","words":[{"word":"ten","chinese":"数字10"},{"word":"sense","chinese":"感觉"},{"word":"men","chinese":"男人(man的复数)"},{"word":"pen","chinese":"钢笔"},{"word":"hen","chinese":"母鸡"},{"word":"then","chinese":"然后"},{"word":"when","chinese":"什么时候"},{"word":"invent","chinese":"发明"}]},{"id":"ch_et_et","parentLabel":"短元音词族","title":"et [et]","icon":"📖","words":[{"word":"pet","chinese":"宠物"},{"word":"set","chinese":"设置"},{"word":"jet","chinese":"喷气式飞机"},{"word":"let","chinese":"让"},{"word":"get","chinese":"获得"},{"word":"bet","chinese":"打赌"},{"word":"net","chinese":"网"},{"word":"yet","chinese":"但是"},{"word":"wet","chinese":"湿的"},{"word":"forget","chinese":"忘记"}]},{"id":"ch_ell_el","parentLabel":"短元音词族","title":"ell [el]","icon":"📖","words":[{"word":"spell","chinese":"拼写"},{"word":"yell","chinese":"大喊，呼喊"},{"word":"bell","chinese":"铃"},{"word":"tell","chinese":"告诉"},{"word":"sell","chinese":"售卖"},{"word":"well","chinese":"很好地"},{"word":"smell","chinese":"闻"},{"word":"shell","chinese":"贝壳"}]},{"id":"ch_end_end","parentLabel":"短元音词族","title":"end [end]","icon":"📖","words":[{"word":"send","chinese":"发送"},{"word":"lend","chinese":"借出"},{"word":"bend","chinese":"弯曲"},{"word":"mend","chinese":"修理"},{"word":"spend","chinese":"花费"},{"word":"depend","chinese":"依靠"}]},{"id":"ch_est_est","parentLabel":"短元音词族","title":"est [est]","icon":"📖","words":[{"word":"west","chinese":"西方"},{"word":"test","chinese":"测试"},{"word":"rest","chinese":"休息"},{"word":"nest","chinese":"鸟巢"},{"word":"vest","chinese":"背心"},{"word":"best","chinese":"最好的"},{"word":"contest","chinese":"比赛"},{"word":"pest","chinese":"害虫"}]},{"id":"ch_ess_es","parentLabel":"短元音词族","title":"ess [es]","icon":"📖","words":[{"word":"guess","chinese":"猜测"},{"word":"mess","chinese":"脏乱"},{"word":"bless","chinese":"祝福"},{"word":"chess","chinese":"国际象棋"},{"word":"dress","chinese":"连衣裙"},{"word":"less","chinese":"更少的"}]},{"id":"ch_id_ɪd","parentLabel":"短元音词族","title":"id [ɪd]","icon":"📖","words":[{"word":"did","chinese":"做(do的过去式)"},{"word":"lid","chinese":"盖子"},{"word":"kid","chinese":"小孩"},{"word":"bid","chinese":"出价"},{"word":"hid","chinese":"隐藏(hide的过去式)"}]},{"id":"ch_ig_ɪg","parentLabel":"短元音词族","title":"ig [ɪg]","icon":"📖","words":[{"word":"fig","chinese":"无花果"},{"word":"big","chinese":"大的"},{"word":"dig","chinese":"挖"},{"word":"pig","chinese":"猪"},{"word":"wig","chinese":"假发"},{"word":"twig","chinese":"树枝"}]},{"id":"ch_in_ɪn","parentLabel":"短元音词族","title":"in [ɪn]","icon":"📖","words":[{"word":"thin","chinese":"薄的"},{"word":"pin","chinese":"大头针"},{"word":"fin","chinese":"鱼鳍"},{"word":"tin","chinese":"罐头"},{"word":"bin","chinese":"垃圾桶"},{"word":"win","chinese":"获胜"},{"word":"skin","chinese":"皮肤"},{"word":"chin","chinese":"下巴"}]},{"id":"ch_ip_ɪp","parentLabel":"短元音词族","title":"ip [ɪp]","icon":"📖","words":[{"word":"rip","chinese":"撕裂"},{"word":"lip","chinese":"嘴唇"},{"word":"zip","chinese":"拉链"},{"word":"ship","chinese":"船"},{"word":"tip","chinese":"尖端"},{"word":"sip","chinese":"小口喝"},{"word":"hip","chinese":"臀部"},{"word":"dip","chinese":"蘸"},{"word":"chip","chinese":"炸薯条"},{"word":"trip","chinese":"旅行"}]},{"id":"ch_it_ɪt","parentLabel":"短元音词族","title":"it [ɪt]","icon":"📖","words":[{"word":"spit","chinese":"吐(唾沫、食物等)"},{"word":"fit","chinese":"适合"},{"word":"bit","chinese":"小片"},{"word":"hit","chinese":"击打"},{"word":"sit","chinese":"坐下"},{"word":"kit","chinese":"成套工具"},{"word":"knit","chinese":"针织"},{"word":"lit","chinese":"点亮(light的过去式)"}]},{"id":"ch_ix_ɪks","parentLabel":"短元音词族","title":"ix [ɪks]","icon":"📖","words":[{"word":"six","chinese":"数字6"},{"word":"fix","chinese":"修理"},{"word":"mix","chinese":"混合"},{"word":"phoenix","chinese":"凤凰"}]},{"id":"ch_ill_ɪl","parentLabel":"短元音词族","title":"ill [ɪl]","icon":"📖","words":[{"word":"till","chinese":"直到"},{"word":"kill","chinese":"杀死"},{"word":"bill","chinese":"账单"},{"word":"fill","chinese":"使充满"},{"word":"hill","chinese":"小山"},{"word":"pill","chinese":"药丸"},{"word":"mill","chinese":"磨坊"},{"word":"will","chinese":"将要"}]},{"id":"ch_ick_ɪk","parentLabel":"短元音词族","title":"ick [ɪk]","icon":"📖","words":[{"word":"pick","chinese":"采摘"},{"word":"quick","chinese":"快的"},{"word":"click","chinese":"点击"},{"word":"lick","chinese":"舔"},{"word":"sick","chinese":"生病的"},{"word":"tick","chinese":"打钩"},{"word":"kick","chinese":"踢"},{"word":"stick","chinese":"树枝，木棍"},{"word":"brick","chinese":"砖块"},{"word":"chick","chinese":"小鸡"}]},{"id":"ch_ish_ɪʃ","parentLabel":"短元音词族","title":"ish [ɪʃ]","icon":"📖","words":[{"word":"wish","chinese":"希望"},{"word":"english","chinese":"英语"},{"word":"finish","chinese":"完成"},{"word":"dish","chinese":"碟，盘"},{"word":"fish","chinese":"鱼"},{"word":"polish","chinese":"擦亮"},{"word":"punish","chinese":"惩罚"},{"word":"rubbish","chinese":"垃圾"}]},{"id":"ch_ub_ʌb","parentLabel":"短元音词族","title":"ub [ʌb]","icon":"📖","words":[{"word":"public","chinese":"公众的"},{"word":"hub","chinese":"中心"},{"word":"cub","chinese":"幼崽"},{"word":"tub","chinese":"盆"},{"word":"rub","chinese":"擦"},{"word":"pub","chinese":"酒吧"},{"word":"club","chinese":"俱乐部"},{"word":"subway","chinese":"地铁"}]},{"id":"ch_ud_ʌd","parentLabel":"短元音词族","title":"ud [ʌd]","icon":"📖","words":[{"word":"bud","chinese":"花蕾"},{"word":"thud","chinese":"砰的一声"},{"word":"stud","chinese":"螺柱"},{"word":"mud","chinese":"泥"}]},{"id":"ch_un_ʌn","parentLabel":"短元音词族","title":"un [ʌn]","icon":"📖","words":[{"word":"bun","chinese":"圆面包"},{"word":"run","chinese":"跑"},{"word":"sun","chinese":"太阳"},{"word":"fun","chinese":"乐趣"},{"word":"gun","chinese":"枪"},{"word":"tun","chinese":"大酒桶"}]},{"id":"ch_up_ʌp","parentLabel":"短元音词族","title":"up [ʌp]","icon":"📖","words":[{"word":"up","chinese":"向上"},{"word":"pup","chinese":"小狗"},{"word":"cup","chinese":"杯子"},{"word":"hiccup","chinese":"打嗝"}]},{"id":"ch_ut_ʌt","parentLabel":"短元音词族","title":"ut [ʌt]","icon":"📖","words":[{"word":"cut","chinese":"剪切"},{"word":"peanut","chinese":"花生"},{"word":"but","chinese":"但是"},{"word":"nut","chinese":"坚果"},{"word":"hut","chinese":"小屋"},{"word":"shut","chinese":"关闭"},{"word":"coconut","chinese":"椰子"},{"word":"walnut","chinese":"核桃"}]},{"id":"ch_uck_ʌk","parentLabel":"短元音词族","title":"uck [ʌk]","icon":"📖","words":[{"word":"stuck","chinese":"卡住的"},{"word":"puck","chinese":"冰球"},{"word":"luck","chinese":"运气"},{"word":"buck","chinese":"美元"},{"word":"duck","chinese":"鸭子"},{"word":"suck","chinese":"吸，吮"},{"word":"truck","chinese":"卡车"},{"word":"tuck","chinese":"扔"}]},{"id":"ch_ush_ʌʃ","parentLabel":"短元音词族","title":"ush [ʌʃ]","icon":"📖","words":[{"word":"gush","chinese":"涌出"},{"word":"hush","chinese":"(使)安静下来"},{"word":"mush","chinese":"玉米粥"},{"word":"rush","chinese":"冲"},{"word":"lush","chinese":"茂盛的"},{"word":"blush","chinese":"脸红"},{"word":"crush","chinese":"压碎"},{"word":"brush","chinese":"刷子"}]},{"id":"ch_ump_ʌmp","parentLabel":"短元音词族","title":"ump [ʌmp]","icon":"📖","words":[{"word":"dump","chinese":"倾倒"},{"word":"lump","chinese":"肿块"},{"word":"jump","chinese":"跳跃"},{"word":"pump","chinese":"泵"},{"word":"bump","chinese":"碰撞"},{"word":"dumpling","chinese":"饺子"}]},{"id":"ch_unk_ʌŋk","parentLabel":"短元音词族","title":"unk [ʌŋk]","icon":"📖","words":[{"word":"sunk","chinese":"下沉(sink的过去式)"},{"word":"junk","chinese":"垃圾"},{"word":"punk","chinese":"朋克"},{"word":"trunk","chinese":"树干"},{"word":"skunk","chinese":"臭鼬"},{"word":"drunk","chinese":"喝醉的"}]},{"id":"ch_bl_bl","parentLabel":"辅音连缀","title":"bl [bl]","icon":"🔡","words":[{"word":"blood","chinese":"血液"},{"word":"blow","chinese":"吹"},{"word":"black","chinese":"黑色的"},{"word":"blue","chinese":"蓝色的"},{"word":"blank","chinese":"空白的"},{"word":"blackboard","chinese":"黑板"}]},{"id":"ch_cl_kl","parentLabel":"辅音连缀","title":"cl [kl]","icon":"🔡","words":[{"word":"clean","chinese":"打扫"},{"word":"close","chinese":"关闭"},{"word":"climb","chinese":"爬"},{"word":"class","chinese":"班级"},{"word":"clock","chinese":"时钟"},{"word":"cloud","chinese":"云朵"}]},{"id":"ch_fl_fl","parentLabel":"辅音连缀","title":"fl [fl]","icon":"🔡","words":[{"word":"floor","chinese":"地板"},{"word":"flu","chinese":"流感"},{"word":"flat","chinese":"公寓"},{"word":"flap","chinese":"拍打"},{"word":"float","chinese":"浮动"},{"word":"flower","chinese":"花"}]},{"id":"ch_gl_gl","parentLabel":"辅音连缀","title":"gl [gl]","icon":"🔡","words":[{"word":"globe","chinese":"地球仪"},{"word":"glue","chinese":"胶水"},{"word":"glad","chinese":"高兴的"},{"word":"glow","chinese":"发光"},{"word":"glass","chinese":"玻璃杯"},{"word":"glove","chinese":"手套"}]},{"id":"ch_pl_pl","parentLabel":"辅音连缀","title":"pl [pl]","icon":"🔡","words":[{"word":"place","chinese":"地方"},{"word":"player","chinese":"运动员"},{"word":"plain","chinese":"平原"},{"word":"plan","chinese":"打算"},{"word":"plane","chinese":"飞机"},{"word":"plate","chinese":"盘子"},{"word":"please","chinese":"请"},{"word":"playground","chinese":"游乐场"}]},{"id":"ch_sl_sl","parentLabel":"辅音连缀","title":"sl [sl]","icon":"🔡","words":[{"word":"slide","chinese":"滑行"},{"word":"slip","chinese":"滑倒"},{"word":"sled","chinese":"雪橇"},{"word":"slug","chinese":"蛞蝓"},{"word":"slow","chinese":"缓慢的"},{"word":"sleep","chinese":"睡觉"}]},{"id":"ch_br_br","parentLabel":"辅音连缀","title":"br [br]","icon":"🔡","words":[{"word":"brother","chinese":"兄弟"},{"word":"bring","chinese":"带来"},{"word":"bridge","chinese":"桥"},{"word":"breakfast","chinese":"早餐"},{"word":"brush","chinese":"刷子"},{"word":"brown","chinese":"棕色的"}]},{"id":"ch_cr_kr","parentLabel":"辅音连缀","title":"cr [kr]","icon":"🔡","words":[{"word":"cry","chinese":"哭"},{"word":"crab","chinese":"螃蟹"},{"word":"cross","chinese":"横穿"},{"word":"cream","chinese":"奶油"},{"word":"crown","chinese":"皇冠"},{"word":"crayon","chinese":"蜡笔"}]},{"id":"ch_pr_pr","parentLabel":"辅音连缀","title":"pr [pr]","icon":"🔡","words":[{"word":"present","chinese":"礼物"},{"word":"price","chinese":"价格"},{"word":"print","chinese":"打印"},{"word":"prize","chinese":"奖品，奖项"},{"word":"proud","chinese":"自豪的"},{"word":"practice","chinese":"练习"}]},{"id":"ch_gr_gr","parentLabel":"辅音连缀","title":"gr [gr]","icon":"🔡","words":[{"word":"group","chinese":"组，群"},{"word":"grape","chinese":"葡萄"},{"word":"green","chinese":"绿色的"},{"word":"grass","chinese":"草"},{"word":"great","chinese":"伟大的"},{"word":"grand","chinese":"宏伟的"}]},{"id":"ch_fr_fr","parentLabel":"辅音连缀","title":"fr [fr]","icon":"🔡","words":[{"word":"front","chinese":"前面"},{"word":"friend","chinese":"朋友"},{"word":"fresh","chinese":"新鲜的"},{"word":"from","chinese":"来自"},{"word":"fridge","chinese":"冰箱"},{"word":"free","chinese":"自由的"},{"word":"friday","chinese":"星期五"},{"word":"french","chinese":"法国人"}]},{"id":"ch_tr_tr","parentLabel":"辅音连缀","title":"tr [tr]","icon":"🔡","words":[{"word":"truck","chinese":"卡车"},{"word":"trumpet","chinese":"小号，喇叭"},{"word":"trap","chinese":"陷阱"},{"word":"train","chinese":"火车"},{"word":"tree","chinese":"树"},{"word":"trip","chinese":"旅行"},{"word":"true","chinese":"真实的"},{"word":"traffic","chinese":"交通"},{"word":"travel","chinese":"旅游，旅行"},{"word":"traditional","chinese":"传统的"}]},{"id":"ch_dr_dr","parentLabel":"辅音连缀","title":"dr [dr]","icon":"🔡","words":[{"word":"drop","chinese":"落下"},{"word":"dream","chinese":"梦想"},{"word":"drum","chinese":"鼓"},{"word":"drink","chinese":"喝"},{"word":"driver","chinese":"司机"},{"word":"dragon","chinese":"龙"}]},{"id":"ch_sm_sm","parentLabel":"辅音连缀","title":"sm [sm]","icon":"🔡","words":[{"word":"small","chinese":"小的"},{"word":"smell","chinese":"气味"},{"word":"smile","chinese":"微笑"},{"word":"smog","chinese":"烟雾；雾霾"},{"word":"smoke","chinese":"烟，烟雾"},{"word":"smart","chinese":"聪明的"}]},{"id":"ch_sn_sn","parentLabel":"辅音连缀","title":"sn [sn]","icon":"🔡","words":[{"word":"snake","chinese":"蛇"},{"word":"snail","chinese":"蜗牛"},{"word":"snack","chinese":"点心"},{"word":"snowy","chinese":"下雪的"}]},{"id":"ch_sw_sw","parentLabel":"辅音连缀","title":"sw [sw]","icon":"🔡","words":[{"word":"swim","chinese":"游泳"},{"word":"sweep","chinese":"打扫"},{"word":"sweater","chinese":"毛衣"},{"word":"swan","chinese":"天鹅"},{"word":"swing","chinese":"秋千"},{"word":"sweet","chinese":"甜的"}]},{"id":"ch_sc_sk","parentLabel":"辅音连缀","title":"sc [sk]","icon":"🔡","words":[{"word":"scary","chinese":"可怕的"},{"word":"scan","chinese":"扫描"},{"word":"score","chinese":"分数"},{"word":"scarf","chinese":"围巾"},{"word":"scale","chinese":"规模"},{"word":"scared","chinese":"害怕的"}]},{"id":"ch_sk_sk","parentLabel":"辅音连缀","title":"sk [sk]","icon":"🔡","words":[{"word":"skirt","chinese":"短裙"},{"word":"sky","chinese":"天空"},{"word":"ski","chinese":"滑雪"},{"word":"skin","chinese":"皮肤"},{"word":"skill","chinese":"技巧"},{"word":"skate","chinese":"滑冰"}]},{"id":"ch_sp_sp","parentLabel":"辅音连缀","title":"sp [sp]","icon":"🔡","words":[{"word":"speak","chinese":"说(某种语言)"},{"word":"spider","chinese":"蜘蛛"},{"word":"speed","chinese":"速度"},{"word":"sport","chinese":"体育运动"},{"word":"space","chinese":"空间；太空"},{"word":"spend","chinese":"花费"},{"word":"spoon","chinese":"勺子"},{"word":"special","chinese":"特殊的"}]},{"id":"ch_st_st","parentLabel":"辅音连缀","title":"st [st]","icon":"🔡","words":[{"word":"stairs","chinese":"楼梯"},{"word":"stone","chinese":"石头"},{"word":"study","chinese":"学习"},{"word":"still","chinese":"仍然，还"},{"word":"start","chinese":"开始"},{"word":"star","chinese":"星星"},{"word":"stay","chinese":"停留"},{"word":"stand","chinese":"站立"},{"word":"story","chinese":"故事"},{"word":"storybook","chinese":"故事书"}]},{"id":"ch_scr_skr","parentLabel":"辅音连缀","title":"scr [skr]","icon":"🔡","words":[{"word":"scream","chinese":"尖叫"},{"word":"script","chinese":"脚本"},{"word":"screen","chinese":"屏幕"},{"word":"scratch","chinese":"划痕；抓伤"}]},{"id":"ch_str_str","parentLabel":"辅音连缀","title":"str [str]","icon":"🔡","words":[{"word":"straight","chinese":"直的"},{"word":"strict","chinese":"严格的"},{"word":"street","chinese":"街道"},{"word":"strong","chinese":"强壮的"},{"word":"strawberry","chinese":"草莓"},{"word":"strange","chinese":"奇怪的"}]},{"id":"ch_spr_spr","parentLabel":"辅音连缀","title":"spr [spr]","icon":"🔡","words":[{"word":"spring","chinese":"春天"},{"word":"spray","chinese":"喷雾"},{"word":"sprite","chinese":"精灵"},{"word":"spread","chinese":"传播"}]},{"id":"ch_spl_spl","parentLabel":"辅音连缀","title":"spl [spl]","icon":"🔡","words":[{"word":"split","chinese":"裂开"},{"word":"spleen","chinese":"脾脏"},{"word":"splash","chinese":"飞溅"},{"word":"splendid","chinese":"极佳的，辉煌的"}]},{"id":"ch_squ_skw","parentLabel":"辅音连缀","title":"squ [skw]","icon":"🔡","words":[{"word":"squirrel","chinese":"松鼠"},{"word":"squid","chinese":"鱿鱼"},{"word":"square","chinese":"正方形"},{"word":"squeeze","chinese":"挤压"}]},{"id":"ch_a_e_eɪ","parentLabel":"魔法e（CVCe）","title":"a_e [eɪ]","icon":"✨","words":[{"word":"late","chinese":"迟到的"},{"word":"chase","chinese":"追逐"},{"word":"cake","chinese":"蛋糕"},{"word":"same","chinese":"相同的"},{"word":"take","chinese":"拿走"},{"word":"game","chinese":"游戏"},{"word":"make","chinese":"制作"},{"word":"name","chinese":"名字"},{"word":"lake","chinese":"湖"},{"word":"gave","chinese":"给(give的过去式)"}]},{"id":"ch_e_e_iː","parentLabel":"魔法e（CVCe）","title":"e_e [iː]","icon":"✨","words":[{"word":"japanese","chinese":"日本人"},{"word":"delete","chinese":"删除"},{"word":"scene","chinese":"场景"},{"word":"eve","chinese":"前夕"},{"word":"gene","chinese":"基因"},{"word":"these","chinese":"这些"},{"word":"theme","chinese":"主题"},{"word":"chinese","chinese":"中国人"}]},{"id":"ch_i_e_aɪ","parentLabel":"魔法e（CVCe）","title":"i_e [aɪ]","icon":"✨","words":[{"word":"ride","chinese":"骑"},{"word":"time","chinese":"时间"},{"word":"nine","chinese":"数字9"},{"word":"like","chinese":"喜欢"},{"word":"mine","chinese":"我的"},{"word":"kite","chinese":"风筝"},{"word":"fine","chinese":"很好的"},{"word":"line","chinese":"线条"},{"word":"five","chinese":"数字5"},{"word":"beside","chinese":"在......旁边"}]},{"id":"ch_o_e_əʊ","parentLabel":"魔法e（CVCe）","title":"o_e [əʊ]","icon":"✨","words":[{"word":"nose","chinese":"鼻子"},{"word":"those","chinese":"那些"},{"word":"bone","chinese":"骨头"},{"word":"home","chinese":"家"},{"word":"hole","chinese":"洞"},{"word":"note","chinese":"笔记"},{"word":"rope","chinese":"绳子"},{"word":"joke","chinese":"玩笑"},{"word":"rode","chinese":"骑(ride的过去式)"},{"word":"hope","chinese":"希望"}]},{"id":"ch_u_e_juː","parentLabel":"魔法e（CVCe）","title":"u_e [juː]","icon":"✨","words":[{"word":"cube","chinese":"立方体"},{"word":"tube","chinese":"管子"},{"word":"use","chinese":"使用"},{"word":"mule","chinese":"骡子"},{"word":"huge","chinese":"巨大的"},{"word":"cute","chinese":"可爱的"},{"word":"mute","chinese":"静音的"},{"word":"dune","chinese":"沙丘"}]},{"id":"ch_ai_eɪ","parentLabel":"元音字母组合","title":"ai [eɪ]","icon":"🎵","words":[{"word":"sail","chinese":"航行"},{"word":"nail","chinese":"指甲"},{"word":"tail","chinese":"尾巴"},{"word":"rain","chinese":"下雨"},{"word":"paint","chinese":"油漆"},{"word":"afraid","chinese":"害怕的"},{"word":"mail","chinese":"邮件"},{"word":"snail","chinese":"蜗牛"},{"word":"wait","chinese":"等待"},{"word":"fail","chinese":"失败"}]},{"id":"ch_ay_eɪ","parentLabel":"元音字母组合","title":"ay [eɪ]","icon":"🎵","words":[{"word":"away","chinese":"离开"},{"word":"way","chinese":"路；方法"},{"word":"day","chinese":"天，日子"},{"word":"say","chinese":"说话"},{"word":"may","chinese":"5月"},{"word":"pay","chinese":"支付"},{"word":"play","chinese":"玩"},{"word":"stay","chinese":"停留"},{"word":"sunday","chinese":"星期天"},{"word":"bay","chinese":"海湾"}]},{"id":"ch_au_ɔː","parentLabel":"元音字母组合","title":"au [ɔː]","icon":"🎵","words":[{"word":"naughty","chinese":"顽皮的"},{"word":"sauce","chinese":"酱"},{"word":"cause","chinese":"造成"},{"word":"fault","chinese":"过错"},{"word":"autumn","chinese":"秋天"},{"word":"author","chinese":"作者"},{"word":"august","chinese":"8月"},{"word":"daughter","chinese":"女儿"}]},{"id":"ch_aw_ɔː","parentLabel":"元音字母组合","title":"aw [ɔː]","icon":"🎵","words":[{"word":"paw","chinese":"爪子"},{"word":"raw","chinese":"生的，未煮过的"},{"word":"jaw","chinese":"下巴"},{"word":"law","chinese":"法律"},{"word":"draw","chinese":"画"},{"word":"awful","chinese":"糟糕的"},{"word":"saw","chinese":"看见(see的过去式)"},{"word":"hawk","chinese":"鹰"}]},{"id":"ch_al_ɔː","parentLabel":"元音字母组合","title":"al [ɔː]","icon":"🎵","words":[{"word":"chalk","chinese":"粉笔"},{"word":"talk","chinese":"谈话"},{"word":"walk","chinese":"步行"},{"word":"stalk","chinese":"茎秆"}]},{"id":"ch_all_ɔːl","parentLabel":"元音字母组合","title":"all [ɔːl]","icon":"🎵","words":[{"word":"all","chinese":"所有"},{"word":"small","chinese":"小的"},{"word":"call","chinese":"打电话"},{"word":"wall","chinese":"墙"},{"word":"tall","chinese":"高的"},{"word":"fall","chinese":"落下"},{"word":"hall","chinese":"大厅"},{"word":"mall","chinese":"商场"},{"word":"ball","chinese":"球"}]},{"id":"ch_ea_iː","parentLabel":"元音字母组合","title":"ea [iː]","icon":"🎵","words":[{"word":"season","chinese":"季节"},{"word":"tea","chinese":"茶；茶叶"},{"word":"eat","chinese":"吃"},{"word":"leaf","chinese":"树叶"},{"word":"read","chinese":"阅读"},{"word":"teacher","chinese":"教师"},{"word":"sea","chinese":"大海"},{"word":"each","chinese":"每个"},{"word":"bean","chinese":"豆，豆类"},{"word":"cheap","chinese":"便宜的"}]},{"id":"ch_ea_e","parentLabel":"元音字母组合","title":"ea [e]","icon":"🎵","words":[{"word":"sweater","chinese":"毛衣"},{"word":"bread","chinese":"面包"},{"word":"ready","chinese":"准备好的"},{"word":"head","chinese":"头"},{"word":"health","chinese":"健康"},{"word":"dead","chinese":"死亡的"},{"word":"breath","chinese":"呼吸"},{"word":"weather","chinese":"天气"}]},{"id":"ch_ee_iː","parentLabel":"元音字母组合","title":"ee [iː]","icon":"🐘","words":[{"word":"weekend","chinese":"周末"},{"word":"see","chinese":"看见"},{"word":"feet","chinese":"脚(foot的复数)"},{"word":"keep","chinese":"保留"},{"word":"meet","chinese":"遇见"},{"word":"deep","chinese":"深的"},{"word":"need","chinese":"需要"},{"word":"between","chinese":"在......中间"},{"word":"fifteen","chinese":"数字15"},{"word":"tree","chinese":"树"}]},{"id":"ch_ew_juː","parentLabel":"元音字母组合","title":"ew [juː]","icon":"🎵","words":[{"word":"knew","chinese":"知道(know的过去式)"},{"word":"few","chinese":"很少的"},{"word":"new","chinese":"新的"},{"word":"dew","chinese":"露水"},{"word":"mew","chinese":"(猫叫的声音)咪，喵"},{"word":"nephew","chinese":"侄子，外甥"}]},{"id":"ch_ew_uː","parentLabel":"元音字母组合","title":"ew [uː]","icon":"🎵","words":[{"word":"threw","chinese":"抛(throw的过去式)"},{"word":"drew","chinese":"画(draw的过去式)"},{"word":"crew","chinese":"船员；机组人员"},{"word":"grew","chinese":"成长(grow的过去式)"},{"word":"blew","chinese":"吹(blow的过去式)"},{"word":"flew","chinese":"飞(fly的过去式)"}]},{"id":"ch_ey_eɪ","parentLabel":"元音字母组合","title":"ey [eɪ]","icon":"🎵","words":[{"word":"obey","chinese":"遵守"},{"word":"hey","chinese":"嘿；你好"},{"word":"they","chinese":"他们"},{"word":"grey","chinese":"灰色的"},{"word":"prey","chinese":"猎物"},{"word":"whey","chinese":"乳清"}]},{"id":"ch_ey_i","parentLabel":"元音字母组合","title":"ey [i]","icon":"🎵","words":[{"word":"money","chinese":"钱"},{"word":"hockey","chinese":"曲棍球，冰球"},{"word":"valley","chinese":"山谷"},{"word":"monkey","chinese":"猴子"},{"word":"donkey","chinese":"驴"},{"word":"honey","chinese":"蜂蜜"},{"word":"turkey","chinese":"火鸡"},{"word":"journey","chinese":"旅行"}]},{"id":"ch_ie_iː","parentLabel":"元音字母组合","title":"ie [iː]","icon":"🎵","words":[{"word":"niece","chinese":"侄女，外甥女"},{"word":"thief","chinese":"小偷"},{"word":"field","chinese":"田地"},{"word":"piece","chinese":"块，片"},{"word":"brief","chinese":"简短的"},{"word":"relief","chinese":"解脱，轻松"}]},{"id":"ch_ie_aɪ","parentLabel":"元音字母组合","title":"ie [aɪ]","icon":"🎵","words":[{"word":"tie","chinese":"领带"},{"word":"lie","chinese":"平躺"},{"word":"die","chinese":"死亡"},{"word":"pie","chinese":"馅饼"}]},{"id":"ch_igh_aɪ","parentLabel":"元音字母组合","title":"igh [aɪ]","icon":"🎵","words":[{"word":"might","chinese":"可能"},{"word":"tight","chinese":"紧的"},{"word":"right","chinese":"正确的"},{"word":"high","chinese":"高的"},{"word":"light","chinese":"灯，灯光"},{"word":"fight","chinese":"打架"},{"word":"sight","chinese":"视野"},{"word":"flight","chinese":"航班"},{"word":"night","chinese":"夜晚"},{"word":"bright","chinese":"明亮的"}]},{"id":"ch_oa_əʊ","parentLabel":"元音字母组合","title":"oa [əʊ]","icon":"🎵","words":[{"word":"boat","chinese":"小船"},{"word":"goat","chinese":"山羊"},{"word":"road","chinese":"道路"},{"word":"coat","chinese":"外套"},{"word":"load","chinese":"装载"},{"word":"goal","chinese":"目标"},{"word":"oak","chinese":"橡树"},{"word":"soap","chinese":"肥皂"}]},{"id":"ch_oi_ɔɪ","parentLabel":"元音字母组合","title":"oi [ɔɪ]","icon":"🎵","words":[{"word":"voice","chinese":"嗓音"},{"word":"oil","chinese":"油"},{"word":"spoil","chinese":"溺爱"},{"word":"join","chinese":"加入"},{"word":"boil","chinese":"煮沸"},{"word":"soil","chinese":"土壤"},{"word":"choice","chinese":"选择"},{"word":"coin","chinese":"硬币"},{"word":"point","chinese":"指，指向"},{"word":"noise","chinese":"噪音"}]},{"id":"ch_oy_ɔɪ","parentLabel":"元音字母组合","title":"oy [ɔɪ]","icon":"🎵","words":[{"word":"boy","chinese":"男孩"},{"word":"soy","chinese":"大豆"},{"word":"toy","chinese":"玩具"},{"word":"joy","chinese":"高兴"},{"word":"loyal","chinese":"忠诚的"},{"word":"annoy","chinese":"让......生气"},{"word":"destroy","chinese":"破坏"},{"word":"enjoy","chinese":"享受"}]},{"id":"ch_oo_uː","parentLabel":"元音字母组合","title":"oo [uː]","icon":"🐙","words":[{"word":"balloon","chinese":"气球"},{"word":"soon","chinese":"不久"},{"word":"food","chinese":"食物"},{"word":"moon","chinese":"月亮"},{"word":"too","chinese":"也"},{"word":"tool","chinese":"工具"},{"word":"zoo","chinese":"动物园"},{"word":"cool","chinese":"凉爽的"},{"word":"tooth","chinese":"牙齿"},{"word":"noodles","chinese":"面条"}]},{"id":"ch_oo_ʊ","parentLabel":"元音字母组合","title":"oo [ʊ]","icon":"🐙","words":[{"word":"wood","chinese":"木头"},{"word":"wool","chinese":"羊毛"},{"word":"cook","chinese":"厨师"},{"word":"foot","chinese":"脚"},{"word":"look","chinese":"看"},{"word":"good","chinese":"好的"},{"word":"book","chinese":"书"},{"word":"stood","chinese":"站立(stand的过去式)"}]},{"id":"ch_oe_əʊ","parentLabel":"元音字母组合","title":"oe [əʊ]","icon":"🎵","words":[{"word":"hoe","chinese":"锄头"},{"word":"toe","chinese":"脚趾"},{"word":"doe","chinese":"母鹿"},{"word":"roe","chinese":"鱼卵"}]},{"id":"ch_ou_aʊ","parentLabel":"元音字母组合","title":"ou [aʊ]","icon":"🎵","words":[{"word":"outside","chinese":"在外面"},{"word":"shout","chinese":"大喊，哭喊"},{"word":"count","chinese":"计数"},{"word":"house","chinese":"房子"},{"word":"sound","chinese":"声音"},{"word":"out","chinese":"向外"},{"word":"mouse","chinese":"老鼠"},{"word":"loud","chinese":"大声的"},{"word":"mouth","chinese":"嘴巴"},{"word":"mountain","chinese":"山"}]},{"id":"ch_ou_ʌ","parentLabel":"元音字母组合","title":"ou [ʌ]","icon":"🎵","words":[{"word":"country","chinese":"国家"},{"word":"couple","chinese":"夫妻"},{"word":"double","chinese":"两倍的"},{"word":"young","chinese":"年轻的"},{"word":"trouble","chinese":"麻烦"},{"word":"touch","chinese":"触摸"},{"word":"enough","chinese":"足够的"},{"word":"cousin","chinese":"堂(表)兄弟，堂(表)姐妹"}]},{"id":"ch_ow_əʊ","parentLabel":"元音字母组合","title":"ow [əʊ]","icon":"🎵","words":[{"word":"snow","chinese":"雪"},{"word":"row","chinese":"排，行"},{"word":"slow","chinese":"缓慢的"},{"word":"tomorrow","chinese":"明天"},{"word":"show","chinese":"展示"},{"word":"grow","chinese":"成长"},{"word":"bowl","chinese":"碗"},{"word":"follow","chinese":"跟随"},{"word":"borrow","chinese":"借；借入"},{"word":"know","chinese":"知道"}]},{"id":"ch_ow_aʊ","parentLabel":"元音字母组合","title":"ow [aʊ]","icon":"🎵","words":[{"word":"how","chinese":"怎样"},{"word":"brown","chinese":"棕色"},{"word":"town","chinese":"城镇"},{"word":"now","chinese":"现在"},{"word":"cow","chinese":"奶牛"},{"word":"down","chinese":"向下"},{"word":"tower","chinese":"塔"},{"word":"flower","chinese":"花"}]},{"id":"ch_ue_juː","parentLabel":"元音字母组合","title":"ue [juː]","icon":"🎵","words":[{"word":"argue","chinese":"争吵"},{"word":"cue","chinese":"提示"},{"word":"value","chinese":"价值"},{"word":"continue","chinese":"继续"}]},{"id":"ch_ue_uː","parentLabel":"元音字母组合","title":"ue [uː]","icon":"🎵","words":[{"word":"glue","chinese":"胶水"},{"word":"sue","chinese":"控告"},{"word":"blue","chinese":"蓝色"},{"word":"flue","chinese":"烟道"},{"word":"true","chinese":"真实的"},{"word":"clue","chinese":"线索"}]},{"id":"ch_ui_uː","parentLabel":"元音字母组合","title":"ui [uː]","icon":"🎵","words":[{"word":"juice","chinese":"果汁"},{"word":"suit","chinese":"西装"},{"word":"juicy","chinese":"多汁的"},{"word":"fruit","chinese":"水果"}]},{"id":"ch_sh_ʃ","parentLabel":"辅音字母组合","title":"sh [ʃ]","icon":"🔗","words":[{"word":"should","chinese":"应该"},{"word":"shark","chinese":"鲨鱼"},{"word":"shine","chinese":"发光，照耀"},{"word":"fish","chinese":"鱼"},{"word":"shoe","chinese":"鞋子"},{"word":"shop","chinese":"商店"},{"word":"fresh","chinese":"新鲜的"},{"word":"finish","chinese":"完成"},{"word":"sheep","chinese":"绵羊"},{"word":"shadow","chinese":"影子"}]},{"id":"ch_ph_f","parentLabel":"辅音字母组合","title":"ph [f]","icon":"🔗","words":[{"word":"dolphin","chinese":"海豚"},{"word":"phone","chinese":"电话"},{"word":"photo","chinese":"照片"},{"word":"nephew","chinese":"侄子，外甥"}]},{"id":"ch_th_θ","parentLabel":"辅音字母组合","title":"th [θ]","icon":"🔗","words":[{"word":"thirty","chinese":"数字30"},{"word":"warmth","chinese":"温暖"},{"word":"fourth","chinese":"第四"},{"word":"thing","chinese":"事情，东西"},{"word":"month","chinese":"月份"},{"word":"thirsty","chinese":"口渴的"},{"word":"thin","chinese":"薄的，瘦的"},{"word":"math","chinese":"数学"},{"word":"thousand","chinese":"数字1000"},{"word":"think","chinese":"思考"}]},{"id":"ch_th_ð","parentLabel":"辅音字母组合","title":"th [ð]","icon":"🔗","words":[{"word":"either","chinese":"也"},{"word":"mother","chinese":"母亲"},{"word":"with","chinese":"和，带有"},{"word":"then","chinese":"然后"},{"word":"them","chinese":"他(她、它)们(宾格)"},{"word":"father","chinese":"父亲"},{"word":"their","chinese":"他(她、它)们的"},{"word":"other","chinese":"其他的"},{"word":"this","chinese":"这个"},{"word":"that","chinese":"那个"}]},{"id":"ch_wh_w","parentLabel":"辅音字母组合","title":"wh [w]","icon":"🔗","words":[{"word":"wheel","chinese":"车轮"},{"word":"what","chinese":"什么"},{"word":"white","chinese":"白色的"},{"word":"while","chinese":"当......的时候"},{"word":"which","chinese":"哪一个"},{"word":"where","chinese":"哪里"}]},{"id":"ch_wh_h","parentLabel":"辅音字母组合","title":"wh [h]","icon":"🔗","words":[{"word":"whom","chinese":"谁(who的宾格)"},{"word":"who","chinese":"谁"},{"word":"whole","chinese":"全部的"},{"word":"whose","chinese":"谁的"}]},{"id":"ch_ch_tʃ","parentLabel":"辅音字母组合","title":"ch [tʃ]","icon":"🔗","words":[{"word":"sandwich","chinese":"三明治"},{"word":"coach","chinese":"教练"},{"word":"each","chinese":"每个"},{"word":"rich","chinese":"富裕的"},{"word":"child","chinese":"孩子"},{"word":"lunch","chinese":"午餐"},{"word":"chart","chinese":"图表"},{"word":"cheap","chinese":"便宜的"},{"word":"march","chinese":"3月"},{"word":"chocolate","chinese":"巧克力"}]},{"id":"ch_ch_k","parentLabel":"辅音字母组合","title":"ch [k]","icon":"🔗","words":[{"word":"character","chinese":"人物，角色"},{"word":"anchor","chinese":"锚"},{"word":"stomach","chinese":"胃"},{"word":"christmas","chinese":"圣诞节"}]},{"id":"ch_gh_f","parentLabel":"辅音字母组合","title":"gh [f]","icon":"🔗","words":[{"word":"tough","chinese":"艰难的"},{"word":"cough","chinese":"咳嗽"},{"word":"laugh","chinese":"大笑"},{"word":"enough","chinese":"足够的"}]},{"id":"ch_ts_ts","parentLabel":"辅音字母组合","title":"ts [ts]","icon":"🔗","words":[{"word":"meets","chinese":"遇见(meet的三单形式)"},{"word":"pants","chinese":"长裤"},{"word":"gifts","chinese":"礼物(gift的复数)"},{"word":"cats","chinese":"猫(cat的复数)"},{"word":"gets","chinese":"获得(get的三单形式)"},{"word":"boats","chinese":"小船(boat的复数)"},{"word":"goats","chinese":"山羊(goat的复数)"},{"word":"shorts","chinese":"短裤"}]},{"id":"ch_ds_dz","parentLabel":"辅音字母组合","title":"ds [dz]","icon":"🔗","words":[{"word":"sends","chinese":"发送(send的三单形式)"},{"word":"reads","chinese":"阅读(read的三单形式)"},{"word":"needs","chinese":"需要(need的三单形式)"},{"word":"beds","chinese":"床(bed的复数)"},{"word":"birds","chinese":"鸟(bird的复数)"},{"word":"heads","chinese":"头(head的复数)"},{"word":"hands","chinese":"手(hand的复数)"},{"word":"cards","chinese":"卡片(card的复数)"}]},{"id":"ch_ck_k","parentLabel":"辅音字母组合","title":"ck [k]","icon":"🔗","words":[{"word":"quickly","chinese":"快速地"},{"word":"kick","chinese":"踢"},{"word":"neck","chinese":"脖子"},{"word":"sick","chinese":"生病的"},{"word":"pocket","chinese":"口袋"},{"word":"truck","chinese":"卡车"},{"word":"lucky","chinese":"幸运的"},{"word":"chopsticks","chinese":"筷子"}]},{"id":"ch_nk_ŋk","parentLabel":"辅音字母组合","title":"nk [ŋk]","icon":"🔗","words":[{"word":"think","chinese":"思考"},{"word":"ink","chinese":"墨水"},{"word":"sink","chinese":"下沉"},{"word":"bank","chinese":"银行"},{"word":"pink","chinese":"粉红色"},{"word":"thank","chinese":"感谢"}]},{"id":"ch_ng_ŋ","parentLabel":"辅音字母组合","title":"ng [ŋ]","icon":"🔗","words":[{"word":"long","chinese":"长的"},{"word":"strong","chinese":"强壮的"},{"word":"king","chinese":"国王"},{"word":"ring","chinese":"戒指"},{"word":"sing","chinese":"唱歌"},{"word":"song","chinese":"歌曲"},{"word":"bring","chinese":"带来"},{"word":"among","chinese":"在......之中"}]},{"id":"ch_kn_n","parentLabel":"辅音字母组合","title":"kn [n]","icon":"🔗","words":[{"word":"knock","chinese":"敲"},{"word":"knit","chinese":"编织"},{"word":"knee","chinese":"膝盖"},{"word":"know","chinese":"知道"},{"word":"knife","chinese":"刀"},{"word":"knight","chinese":"骑士"}]},{"id":"ch_mb_m","parentLabel":"辅音字母组合","title":"mb [m]","icon":"🔗","words":[{"word":"climb","chinese":"爬"},{"word":"comb","chinese":"梳子"},{"word":"lamb","chinese":"羔羊"},{"word":"thumb","chinese":"拇指"}]},{"id":"ch_wr_r","parentLabel":"辅音字母组合","title":"wr [r]","icon":"🔗","words":[{"word":"wrong","chinese":"错误的"},{"word":"wrinkle","chinese":"皱纹"},{"word":"write","chinese":"写"},{"word":"writer","chinese":"作者"}]},{"id":"ch_shr_ʃr","parentLabel":"辅音字母组合","title":"shr [ʃr]","icon":"🔗","words":[{"word":"shrink","chinese":"缩小，减少"},{"word":"shrug","chinese":"耸肩"},{"word":"shrub","chinese":"灌木"},{"word":"shrimp","chinese":"虾"}]},{"id":"ch_sch_sk","parentLabel":"辅音字母组合","title":"sch [sk]","icon":"🔗","words":[{"word":"scheme","chinese":"计划，方案"},{"word":"school","chinese":"学校"},{"word":"scholar","chinese":"学者"},{"word":"scholarship","chinese":"奖学金"}]},{"id":"ch_thr_θr","parentLabel":"辅音字母组合","title":"thr [θr]","icon":"🔗","words":[{"word":"throat","chinese":"喉咙"},{"word":"three","chinese":"数字3"},{"word":"threat","chinese":"威胁"},{"word":"throw","chinese":"扔，抛"}]},{"id":"ch_tch_tʃ","parentLabel":"辅音字母组合","title":"tch [tʃ]","icon":"🔗","words":[{"word":"catch","chinese":"抓住"},{"word":"watch","chinese":"手表"},{"word":"match","chinese":"比赛"},{"word":"kitchen","chinese":"厨房"}]},{"id":"ch_sion_ʒn","parentLabel":"后缀规则","title":"sion [ʒn]","icon":"🧩","words":[{"word":"division","chinese":"分开"},{"word":"decision","chinese":"决定"},{"word":"vision","chinese":"视觉"},{"word":"television","chinese":"电视"}]},{"id":"ch_sion_ʃn","parentLabel":"后缀规则","title":"sion [ʃn]","icon":"🧩","words":[{"word":"mission","chinese":"使命"},{"word":"tension","chinese":"紧张"},{"word":"mansion","chinese":"大厦"},{"word":"discussion","chinese":"讨论"}]},{"id":"ch_cian_ʃn","parentLabel":"后缀规则","title":"cian [ʃn]","icon":"🧩","words":[{"word":"physician","chinese":"医生，内科医生"},{"word":"magician","chinese":"魔术师"},{"word":"musician","chinese":"音乐家"},{"word":"technician","chinese":"技术人员"}]},{"id":"ch_tion_ʃn","parentLabel":"后缀规则","title":"tion [ʃn]","icon":"🧩","words":[{"word":"mention","chinese":"提到"},{"word":"action","chinese":"动作"},{"word":"nation","chinese":"国家，民族"},{"word":"fiction","chinese":"小说"},{"word":"station","chinese":"车站"},{"word":"attention","chinese":"注意"}]},{"id":"ch_ous_əs","parentLabel":"后缀规则","title":"ous [əs]","icon":"🧩","words":[{"word":"delicious","chinese":"美味的"},{"word":"famous","chinese":"著名的"},{"word":"serious","chinese":"严肃的"},{"word":"dangerous","chinese":"危险的"}]},{"id":"ch_ful_fl","parentLabel":"后缀规则","title":"ful [fl]","icon":"🧩","words":[{"word":"awful","chinese":"可怕的"},{"word":"careful","chinese":"仔细的"},{"word":"useful","chinese":"有用的"},{"word":"hopeful","chinese":"有希望的"},{"word":"beautiful","chinese":"美丽的"},{"word":"wonderful","chinese":"精彩的"},{"word":"helpful","chinese":"有帮助的"},{"word":"harmful","chinese":"有害的"},{"word":"colorful","chinese":"五颜六色的"},{"word":"successful","chinese":"成功的"}]}]
+;
+
+const ALL_WORDS = CHAPTERS.flatMap(ch => ch.words);
+
+// ===== 存储层 =====
+const STORAGE_KEY = 'xueli_v2_progress';
+function loadData() {
+  try { const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); } catch(e){}
+  return { words:{}, streak:0, lastDate:null };
+}
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function getWordRecord(data, word) {
+  if (!data.words[word]) data.words[word]={status:0,correct:0,wrong:0,hint:0,nextReview:null,lastSeen:null};
+  return data.words[word];
+}
+function markCorrect(data, word) {
+  const r=getWordRecord(data,word); r.correct++; r.lastSeen=Date.now();
+  const intervals=[1,2,4,7,15,30];
+  r.nextReview=Date.now()+intervals[Math.min(r.correct-1,intervals.length-1)]*86400000;
+  r.status=r.correct>=3?3:r.correct>=2?2:1; saveData(data);
+}
+function markWrong(data, word) {
+  const r=getWordRecord(data,word); r.wrong++; r.lastSeen=Date.now();
+  r.nextReview=Date.now()+86400000; r.status=Math.max(r.status-1,0); saveData(data);
+}
+function markHint(data, word) { const r=getWordRecord(data,word); r.hint++; saveData(data); }
+
+// ===== 状态 =====
+let appData=loadData();
+let state={ currentChapterId:null, currentWordIndex:0, words:[], correctCount:0, wrongCount:0, hintCount:0, sessionMistakes:[] };
+
+// ===== 首页 =====
+function updateHomeStats() {
+  appData=loadData();
+  let total=0, learned=0;
+  ALL_WORDS.forEach(w=>{ total++; const r=appData.words[w.word]; if(r&&r.status>=3) learned++; });
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-learned').textContent=learned;
+  document.getElementById('stat-streak').textContent=appData.streak||0;
+  renderChapterList();
+}
+function renderChapterList() {
+  const container=document.getElementById('chapter-list'); container.innerHTML='';
+  const groups={};
+  CHAPTERS.forEach(ch=>{ if(!groups[ch.parentLabel]) groups[ch.parentLabel]=[]; groups[ch.parentLabel].push(ch); });
+  Object.keys(groups).forEach(gName=>{
+    const gt=document.createElement('div'); gt.className='section-title'; gt.textContent=gName; container.appendChild(gt);
+    const grid=document.createElement('div'); grid.className='chapter-grid';
+    groups[gName].forEach(ch=>{
+      let chTotal=ch.words.length, chMastered=0;
+      ch.words.forEach(w=>{ const r=appData.words[w.word]; if(r&&r.status>=3) chMastered++; });
+      const pct=chTotal>0?Math.round(chMastered/chTotal*100):0;
+      const btn=document.createElement('button');
+      btn.className='chapter-btn'+(pct===100?' mastered':'');
+      btn.innerHTML='<div class="ch-icon">'+ch.icon+'</div><div class="ch-title">'+ch.title+'</div><div class="ch-sub">'+ch.words.length+' 词 · 掌握 '+chMastered+'/'+chTotal+'</div><div class="ch-bar-wrap"><div class="ch-bar" style="width:'+pct+'%"></div></div>';
+      btn.onclick=()=>startChapter(ch.id); grid.appendChild(btn);
+    });
+    container.appendChild(grid);
+  });
+}
+
+// ===== 练习 =====
+function startChapter(chapterId) {
+  const ch=CHAPTERS.find(c=>c.id===chapterId); if(!ch) return;
+  appData=loadData();
+  state.currentChapterId=chapterId; state.currentWordIndex=0;
+  state.correctCount=0; state.wrongCount=0; state.hintCount=0; state.sessionMistakes=[];
+  const now=Date.now();
+  const review=ch.words.filter(w=>{ const r=appData.words[w.word]; return r&&r.nextReview&&r.nextReview<=now&&r.status>=1; });
+  const fresh=ch.words.filter(w=>{ const r=appData.words[w.word]; return !r||r.status===0; });
+  const rest=ch.words.filter(w=>{ const r=appData.words[w.word]; return r&&r.status>=1&&(!r.nextReview||r.nextReview>now); });
+  state.words=[...review.sort(()=>Math.random()-.5),...fresh.sort(()=>Math.random()-.5),...rest.sort(()=>Math.random()-.5)];
+  document.getElementById('chapter-name-label').textContent=ch.title;
+  switchPage('practice-page'); renderCurrentWord(); updateProgress();
+}
+function renderCurrentWord() {
+  const word=state.words[state.currentWordIndex]; if(!word) return completeChapter();
+  appData=loadData();
+  const r=getWordRecord(appData,word.word);
+  document.getElementById('word-chinese').textContent=word.chinese;
+  document.getElementById('word-type').textContent='';
+  const labels=['未学习','学习中','已熟悉','已掌握'];
+  const cls=['new-badge','review-badge','review-badge','mastered-badge'];
+  const sc=Math.min(r.status,3);
+  let statusHtml='<span class="'+cls[sc]+'">'+labels[sc]+'</span>';
+  if(r.correct>0) statusHtml+='&nbsp; 已答对 '+r.correct+' 次';
+  document.getElementById('word-status').innerHTML=statusHtml;
+  const input=document.getElementById('word-input');
+  input.value=''; input.className='word-input'; input.disabled=false; input.placeholder='输入英文单词…';
+  const fb=document.getElementById('feedback'); fb.className='feedback'; fb.textContent='';
+  setTimeout(()=>input.focus(),100);
+}
+function showHint() {
+  const word=state.words[state.currentWordIndex];
+  const input=document.getElementById('word-input');
+  const cur=input.value.toLowerCase();
+  let newVal='';
+  for(let i=0;i<word.word.length;i++){
+    if(i<cur.length&&cur[i]===word.word[i]) newVal+=word.word[i];
+    else { newVal+=word.word[i]; break; }
+  }
+  input.value=newVal; state.hintCount++; markHint(appData,word.word);
+  const fb=document.getElementById('feedback');
+  fb.className='feedback hint show';
+  fb.textContent='💡 提示：已揭示到第 '+newVal.length+' 个字母，共 '+word.word.length+' 个字母';
+  input.focus();
+}
+function checkAnswer() {
+  const word=state.words[state.currentWordIndex];
+  const input=document.getElementById('word-input');
+  const ua=input.value.trim().toLowerCase();
+  if(!ua){ showToast('请先输入单词！'); return; }
+  const fb=document.getElementById('feedback');
+  if(ua===word.word.toLowerCase()){
+    state.correctCount++; input.className='word-input correct'; input.disabled=true;
+    fb.className='feedback success show';
+    fb.innerHTML='🎉 完全正确！<div class="correct-word-show">'+word.word+'</div>';
+    markCorrect(appData,word.word); showStars();
+    setTimeout(()=>{ state.currentWordIndex++; updateProgress(); renderCurrentWord(); },1400);
+  } else {
+    state.wrongCount++;
+    if(!state.sessionMistakes.find(w=>w.word===word.word)) state.sessionMistakes.push(word);
+    markWrong(appData,word.word);
+    input.className='word-input incorrect';
+    fb.className='feedback error show';
+    fb.textContent='❌ 再试一次！提示：首字母是 "'+word.word[0]+'"，共 '+word.word.length+' 个字母';
+    setTimeout(()=>{ input.className='word-input'; input.value=''; input.disabled=false; fb.className='feedback'; input.focus(); },1300);
+  }
+}
+function updateProgress() {
+  const total=state.words.length, cur=state.currentWordIndex;
+  const pct=total>0?(cur/total)*100:0;
+  const circle=document.getElementById('progress-circle');
+  const c=2*Math.PI*20;
+  circle.style.strokeDashoffset=c-(pct/100)*c;
+  document.getElementById('progress-text').textContent=cur+'/'+total;
+}
+function completeChapter() {
+  appData=loadData();
+  const today=new Date().toDateString(), yest=new Date(Date.now()-86400000).toDateString();
+  if(appData.lastDate!==today){
+    appData.streak=(appData.lastDate===yest)?(appData.streak||0)+1:1;
+    appData.lastDate=today; saveData(appData);
+  }
+  document.getElementById('complete-correct').textContent=state.correctCount;
+  document.getElementById('complete-wrong').textContent=state.wrongCount;
+  document.getElementById('complete-hints').textContent=state.hintCount;
+  switchPage('complete-page');
+}
+function reviewMistakes() {
+  if(state.sessionMistakes.length>0){
+    state.words=[...state.sessionMistakes].sort(()=>Math.random()-.5);
+    state.currentWordIndex=0; state.correctCount=0; state.wrongCount=0;
+    state.hintCount=0; state.sessionMistakes=[];
+    switchPage('practice-page'); renderCurrentWord(); updateProgress();
+  } else { showToast('没有错题可以复习！'); }
+}
+
+// ===== 进度页 =====
+let currentFilter='all';
+function initProgressPage() {
+  appData=loadData();
+  const sel=document.getElementById('progress-chapter-select');
+  sel.innerHTML='<option value="all">所有章节</option>';
+  CHAPTERS.forEach(ch=>{ const opt=document.createElement('option'); opt.value=ch.id; opt.textContent=ch.title+' ('+ch.words.length+'词)'; sel.appendChild(opt); });
+  renderWordList();
+}
+function setFilter(btn) {
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active'); currentFilter=btn.dataset.filter; renderWordList();
+}
+function renderWordList() {
+  appData=loadData();
+  const chId=document.getElementById('progress-chapter-select').value;
+  let words=chId==='all'?ALL_WORDS:(CHAPTERS.find(c=>c.id===chId)||{words:[]}).words;
+  if(currentFilter!=='all'){
+    const fs=parseInt(currentFilter);
+    words=words.filter(w=>{ const r=appData.words[w.word]; const s=r?r.status:0; return fs===3?s>=3:s===fs; });
+  }
+  const sLabels=['未学习','学习中','已熟悉','已掌握'];
+  const sCls=['s0','s1','s2','s3'];
+  const container=document.getElementById('word-list-container');
+  if(words.length===0){ container.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light)">没有符合条件的单词</div>'; return; }
+  let html='<div class="word-list"><div class="word-list-header"><span>单词</span><span>状态</span><span>复习计划</span></div>';
+  words.forEach(w=>{
+    const r=appData.words[w.word]; const s=r?Math.min(r.status,3):0;
+    let nxt='-';
+    if(r&&r.nextReview&&s<3){ const d=Math.ceil((r.nextReview-Date.now())/86400000); nxt=d<=0?'今天':d+'天后'; }
+    else if(s>=3) nxt='已掌握';
+    html+='<div class="word-list-item"><div><div class="wl-word">'+w.word+'</div><div class="wl-cn">'+w.chinese+'</div></div><span class="wl-status '+sCls[s]+'">'+sLabels[s]+'</span><span class="wl-next">'+nxt+'</span></div>';
+  });
+  html+='</div>';
+  container.innerHTML=html;
+}
+
+// ===== 通用 =====
+function switchPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goHome(){ switchPage('home-page'); updateHomeStats(); }
+function switchTab(tab,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(tab==='home'){ switchPage('home-page'); updateHomeStats(); }
+  else if(tab==='progress'){ switchPage('progress-page'); initProgressPage(); }
+}
+function showStars(){
+  const stars=document.getElementById('stars'); stars.classList.add('show'); stars.innerHTML='';
+  const em=['⭐','🌟','✨','💫','🎉'];
+  for(let i=0;i<8;i++){ const s=document.createElement('div'); s.className='star'; s.textContent=em[Math.floor(Math.random()*em.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*50+30+'%'; s.style.animationDelay=Math.random()*0.3+'s'; stars.appendChild(s); }
+  setTimeout(()=>stars.classList.remove('show'),1500);
+}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('word-input').addEventListener('keydown',e=>{ if(e.key==='Enter') checkAnswer(); });
+  updateHomeStats();
+});
+</script>
 </body>
 </html>
